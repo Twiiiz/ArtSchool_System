@@ -1,0 +1,9 @@
+.class_content {
+  flex-grow: 1;
+  text-align: center;
+  padding-top: 12%;
+}
+
+table {
+  display: inline-table;
+}

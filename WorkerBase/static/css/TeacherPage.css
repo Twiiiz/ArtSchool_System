@@ -1,0 +1,45 @@
+.teacher_action {
+  background-color: lightblue;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.action_list {
+  width: 100%;
+  background-color: brown;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.class_list, .lesson_action {
+  display: inline-block;
+  width: 50%;
+}
+
+.class_list {
+  background-color: pink;
+}
+
+.lesson_action {
+  text-align: center;
+  padding-top: 20%;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 28px;
+}
+
+.schedule {
+  display: block;
+  margin-bottom: 10%;
+}
+
+/* .lessons_done {
+  
+} */

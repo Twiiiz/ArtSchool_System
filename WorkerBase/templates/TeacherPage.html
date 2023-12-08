@@ -1,0 +1,48 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Сторінка дій Вчителя
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/TeacherPage.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class="teacher_action">
+  <h1>Доступні Дії</h1>
+  {% comment %} <a href="class">Клас</a>
+  <a href=""></a> {% endcomment %}
+  <div class='action_list'>
+    <div class='class_list'>
+      <h2>Доступні Класи:</h2>
+      {% if is_None %}
+        <p>На даний момент немає доступних класів</p>
+      {% else %}
+        <table>
+          <thead>
+            <tr>
+              <th>Назва класу</th>
+              <th>Спеціалізація</th>
+              <th>Дія</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for class in classes %}
+              <tr>
+                <td>{{ class.1 }}</td>
+                <td>{{ class.2 }}</td>
+                <td><button onclick="location.href='{% url 'show-teacher-class-page' class.0 %}'">Перегляд</button></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+    <div class='lesson_action'>
+      <a href="" class='schedule'>Переглянути розклад на найближчі 7 днів</a>
+      <a href="lessons_done" class='lessons_done'>Переглянути проведені заняття</a>
+    </div>
+  </div>
+ </div>
+{% endblock %}

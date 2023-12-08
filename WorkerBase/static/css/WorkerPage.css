@@ -1,0 +1,20 @@
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 25% 1fr;
+}
+
+#user_head {
+  /* width: 25%; */
+  width: 25%;
+  background-color: lightgray;
+  height: 100vh;
+}
+
+#last_name, #first_name, #patronymic, #role {
+  display: inline-block;
+}
