@@ -1,0 +1,47 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}Дані обраного учня{% endblock title %}
+{% block styles %}
+  {{ block.super }}
+  
+{% endblock styles %}
+{% block content %}
+  {{ block.super }}
+  <div class='student_content'>
+    <h1>Особиста сторінка</h1>
+    <img src="{% static student_data.6 %}">
+    <div class='student'>
+      <table class='student_table'>
+        <thead>
+          <tr>
+            <th>Прізвище</th>
+            <th>Ім'я</th>
+            <th>По-батькові</th>
+            <th>Дата народження</th>
+          </tr>
+        </thead>
+        <tbody>
+          <td>{{ student_data.1 }}</td>
+          <td>{{ student_data.2 }}</td>
+          <td>{{ student_data.3 }}</td>
+          <td>{{ student_data.4 }}</td>
+        </tbody>
+      </table>
+    </div>
+    <div class='main_teacher'>
+      <h2>Класний керівник</h2>
+      <table class='main_teacher_table'>
+        <thead>
+          <th>Прізвище</th>
+          <th>Ім'я</th>
+          <th>По-батькові</th>
+        </thead>
+        <tbody>
+          <td>{{ main_teacher.0 }}</td>
+          <td>{{ main_teacher.1 }}</td>
+          <td>{{ main_teacher.2 }}</td>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

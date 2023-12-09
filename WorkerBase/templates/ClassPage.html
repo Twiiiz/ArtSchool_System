@@ -19,7 +19,7 @@
       <tbody>
         {% for student in class_students %}
           <tr>
-            <td>{{ student.1 }} {{ student.2 }} {{ student.3 }}</td>
+            <td>{{ student.1 }} {{ student.2 }}</td>
             <td><button onclick="location.href='{% url 'show-teacher-student-page' class_id=class_id student_id=student.0 %}'">Перегляд особових даних</button></td>
           </tr>
         {% endfor %}

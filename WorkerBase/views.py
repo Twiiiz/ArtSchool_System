@@ -55,8 +55,6 @@ def showTeacherPage(request):
      raise Http404
   # response.set_cookie('logged_in', 'True', secure=True)
   # request.session['role'] = 'Вчитель'
-  print(request.session['worker_id'])
-  print(type(request.session['worker_id']))
   cursor = connection.cursor()
   cursor.execute("""
                  SELECT Classes.class_id, Classes.[name], Specialisations.[name]
@@ -69,11 +67,9 @@ def showTeacherPage(request):
                      HAVING COUNT([Students in class].fk_student_id) >= 2)
                  """, (request.session['worker_id'],))
   classes = cursor.fetchall()
-  print(classes)
   is_None = True
   if classes is not None:
     is_None = False
-  print(is_None)
   return render(request, 'TeacherPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_patronymic': request.session['patronymic'],
@@ -87,14 +83,13 @@ def showClassPage(request, class_id):
   #    raise Http404
   cursor = connection.cursor()
   cursor.execute("""
-                 SELECT student_id, last_name, first_name, patronymic
+                 SELECT student_id, last_name, first_name
                  FROM Students INNER JOIN [Students in class]
                   ON Students.student_id = [Students in class].fk_student_id INNER JOIN Classes 
                   ON [Students in class].fk_class_id = Classes.class_id
                  WHERE Students.fk_teacher_id = %s AND Classes.class_id = %s
                  """, [request.session['worker_id'], class_id])
   class_students = cursor.fetchall()
-  print(class_students)
   return render(request, 'ClassPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_patronymic': request.session['patronymic'],
@@ -103,8 +98,28 @@ def showClassPage(request, class_id):
                                             'class_students': class_students,
                                             'class_id': class_id})
 
-def showStudentPage(request, student_id):
-  return render(request, 'StudentPage.html')
+def showStudentPage(request, class_id, student_id):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT *
+                 FROM Students
+                 WHERE student_id = %s
+                 """, (student_id,))
+  student_data = cursor.fetchone()
+  cursor.execute("""
+                 SELECT last_name, first_name, patronymic
+                 FROM Workers
+                 WHERE worker_id = %s
+                 """, (student_data[5],))
+  main_teacher = cursor.fetchone()
+  print(student_data[-1])
+  return render(request, 'StudentPage.html', {'w_last_name': request.session['last_name'],
+                                              'w_first_name': request.session['first_name'], 
+                                              'w_patronymic': request.session['patronymic'],
+                                              'w_role': request.session['role'],
+                                              'w_photo': request.session['photo'],
+                                              'student_data': student_data,
+                                              'main_teacher': main_teacher})
 
 def showLessonsDonePage(request):
   return render(request, 'LessonsDone.html')
