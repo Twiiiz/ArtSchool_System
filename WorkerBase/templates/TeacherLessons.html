@@ -1,0 +1,69 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Заняття вчителя
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/TeacherLessons.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class='content'>
+  <h1>Ваші заняття</h1>
+  <div class='lessons_done'>
+    <h2 class='h2_done'>Проведені заняття</h2>
+    <table class='done_table'>
+      <thead>
+        <tr>
+          <th>Дисципліна</th>
+          <th>Клас</th>
+          <th>Дата</th>
+          <th>Початок заняття</th>
+          <th>Кінець заняття</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lesson in lessons_done %}
+        <tr>
+          <td>{{ lesson.0 }}</td>
+          <td>{{ lesson.1 }}</td>
+          <td>{{ lesson.2 }}</td>
+          <td>{{ lesson.3 }}</td>
+          <td>{{ lesson.4 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class='lessons_planned'>
+    <h2 class='h2_planned'>Заплановані заняття</h2>
+    {% if is_None %}
+      <p>На даний момент запланованих занять немає</p>
+    {% else %}
+      <table class='planned_table'>
+        <thead>
+          <tr>
+            <th>Дисципліна</th>
+            <th>Клас</th>
+            <th>Дата</th>
+            <th>Початок заняття</th>
+            <th>Кінець заняття</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lesson in lessons_planned %}
+          <tr>
+            <td>{{ lesson.0 }}</td>
+            <td>{{ lesson.1 }}</td>
+            <td>{{ lesson.2 }}</td>
+            <td>{{ lesson.3 }}</td>
+            <td>{{ lesson.4 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+ </div>
+{% endblock %}

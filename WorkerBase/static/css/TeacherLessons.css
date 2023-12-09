@@ -1,0 +1,15 @@
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+.lessons_done {
+  margin-right: 5%;
+}
+
+.content {
+  width: 100%;
+}

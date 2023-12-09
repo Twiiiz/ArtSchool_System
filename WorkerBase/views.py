@@ -121,5 +121,32 @@ def showStudentPage(request, class_id, student_id):
                                               'student_data': student_data,
                                               'main_teacher': main_teacher})
 
-def showLessonsDonePage(request):
-  return render(request, 'LessonsDone.html')
+def showTeacherLessonsPage(request):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
+                 FROM Disciplines INNER JOIN Lessons ON discipline_id = FK_discipline_id INNER JOIN Classes
+                 ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
+                 WHERE fk_teacher_id = %s AND fk_status_id = 2
+                 """, (request.session['worker_id'],))
+  lessons_done = cursor.fetchall()
+  biggest_date = max(lessons_done, key=lambda t: t[2])[2]
+  biggest_start_time = max(lessons_done, key=lambda t: t[3])[3]
+  cursor.execute("""
+                 SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
+                 FROM Disciplines INNER JOIN Lessons ON discipline_id = FK_discipline_id INNER JOIN Classes
+                 ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
+                 WHERE fk_teacher_id = %s AND fk_status_id = 1 AND (Lessons.[date] > %s OR (Lessons.[date] = %s AND Lessons.start_time > %s))
+                 """, (request.session['worker_id'], biggest_date, biggest_date, biggest_start_time))
+  lessons_planned = cursor.fetchall()
+  is_None = True
+  if len(lessons_planned) > 0:
+    is_None = False
+  return render(request, 'TeacherLessons.html', {'w_last_name': request.session['last_name'],
+                                              'w_first_name': request.session['first_name'], 
+                                              'w_patronymic': request.session['patronymic'],
+                                              'w_role': request.session['role'],
+                                              'w_photo': request.session['photo'],
+                                              'lessons_done': lessons_done,
+                                              'lessons_planned': lessons_planned,
+                                              'is_None': is_None})
