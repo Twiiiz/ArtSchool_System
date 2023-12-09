@@ -150,3 +150,33 @@ def showTeacherLessonsPage(request):
                                               'lessons_done': lessons_done,
                                               'lessons_planned': lessons_planned,
                                               'is_None': is_None})
+
+def showStudentStatsPage(request, class_id):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT Students.last_name, Students.first_name, Classes.[name], Disciplines.[name], Lessons.[date], Lessons.start_time, grade
+                 FROM Students INNER JOIN [Student grades] 
+                           ON Students.student_id = [Student grades].fk_student_id INNER JOIN Lessons
+                           ON [Student grades].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
+                           ON Lessons.FK_discipline_id = Disciplines.discipline_id INNER JOIN Classes
+                           ON Lessons.fk_class_id = Classes.class_id
+                 WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
+                 """, (request.session['worker_id'], class_id))
+  student_grades = cursor.fetchall()
+  cursor.execute("""
+                 SELECT Students.last_name, Students.first_name, Classes.[name], Disciplines.[name], Lessons.[date], Lessons.start_time, presence
+                 FROM Students INNER JOIN [Student attendances]
+                           ON Students.student_id = [Student attendances].fk_student_id INNER JOIN Lessons
+                           ON [Student attendances].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
+                           ON Lessons.FK_discipline_id = Disciplines.discipline_id INNER JOIN Classes
+                           ON Lessons.fk_class_id = Classes.class_id
+                 WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
+                 """, (request.session['worker_id'], class_id))
+  student_attend = cursor.fetchall()
+  return render(request, 'StudentStats.html', {'w_last_name': request.session['last_name'],
+                                              'w_first_name': request.session['first_name'], 
+                                              'w_patronymic': request.session['patronymic'],
+                                              'w_role': request.session['role'],
+                                              'w_photo': request.session['photo'],
+                                              'student_grades': student_grades,
+                                              'student_attend': student_attend})                                             

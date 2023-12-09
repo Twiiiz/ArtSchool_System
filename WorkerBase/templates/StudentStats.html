@@ -1,0 +1,75 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Оцінки та відвідуваність учнів
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/StudentStats.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class='content'>
+  <h1>Статистика учнів</h1>
+  <div class='stats'>
+    <div class='grades'>
+      <h2>Оцінки</h2>
+      <table class='grade_table'>
+        <thead>
+          <tr>
+            <th>Прізвище</th>
+            <th>Ім'я</th>
+            <th>Клас</th>
+            <th>Дисципліна</th>
+            <th>Дата заняття</th>
+            <th>Початок заняття</th>
+            <th>Оцінка</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in student_grades %}
+          <tr>
+            <td>{{ grade.0 }}</td>
+            <td>{{ grade.1 }}</td>
+            <td>{{ grade.2 }}</td>
+            <td>{{ grade.3 }}</td>
+            <td>{{ grade.4 }}</td>
+            <td>{{ grade.5 }}</td>
+            <td>{{ grade.6 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class='attend'>
+      <h2>Відвідування занять</h2>
+      <table class='attend_table'>
+        <thead>
+          <tr>
+            <th>Прізвище</th>
+            <th>Ім'я</th>
+            <th>Клас</th>
+            <th>Дисципліна</th>
+            <th>Дата заняття</th>
+            <th>Початок заняття</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for attend in student_attend %}
+          <tr>
+            <td>{{ attend.0 }}</td>
+            <td>{{ attend.1 }}</td>
+            <td>{{ attend.2 }}</td>
+            <td>{{ attend.3 }}</td>
+            <td>{{ attend.4 }}</td>
+            <td>{{ attend.5 }}</td>
+            <td>{{ attend.6 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+ </div>
+{% endblock %}

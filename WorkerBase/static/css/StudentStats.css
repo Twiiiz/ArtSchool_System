@@ -1,0 +1,29 @@
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stats {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.grades, .attend {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.grades {
+  margin-bottom: 5%;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid black;
+}
