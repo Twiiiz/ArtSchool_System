@@ -179,4 +179,24 @@ def showStudentStatsPage(request, class_id):
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'student_grades': student_grades,
-                                              'student_attend': student_attend})                                             
+                                              'student_attend': student_attend})
+
+def showStudentCompPage(request, class_id):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT last_name, first_name, [Discipline skills].[name], Disciplines.[name], [Competence levels].[name],
+                 [Student competencies].[date_time], [Student competencies].stud_comp_id 
+                 FROM Disciplines INNER JOIN [Discipline skills] 
+                             ON Disciplines.discipline_id = [Discipline skills].fk_discipline_id INNER JOIN [Student competencies]
+                             ON [Discipline skills].skill_id = [Student competencies].fk_skill_id INNER JOIN Students
+                             ON [Student competencies].fk_student_id = Students.student_id INNER JOIN [Students in class]
+                             ON Students.student_id = [Students in class].fk_student_id, [Competence levels]
+                 WHERE [Students in class].fk_class_id = %s AND [Student competencies].fk_level_id = [Competence levels].level_id
+                 """, (class_id,))
+  student_comp = cursor.fetchall()
+  return render(request, 'StudentComp.html', {'w_last_name': request.session['last_name'],
+                                              'w_first_name': request.session['first_name'], 
+                                              'w_patronymic': request.session['patronymic'],
+                                              'w_role': request.session['role'],
+                                              'w_photo': request.session['photo'],
+                                              'student_comp': student_comp})                                               

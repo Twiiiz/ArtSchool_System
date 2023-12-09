@@ -1,0 +1,39 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Здобуті учнями компетентності
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/StudentComp.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class='content'>
+  <h1>Компетентності учнів класу %вставити назву класу%</h1>
+  <table class='grade_table'>
+    <thead>
+      <tr>
+        <th>Прізвище</th>
+        <th>Ім'я</th>
+        <th>Компетенція</th>
+        <th>Дисципліна</th>
+        <th>Рівень оволодіння</th>
+        <th>Дата+час оцінення</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for comp in student_comp %}
+      <tr>
+        <td>{{ comp.0 }}</td>
+        <td>{{ comp.1 }}</td>
+        <td>{{ comp.2 }}</td>
+        <td>{{ comp.3 }}</td>
+        <td>{{ comp.4 }}</td>
+        <td>{{ comp.5 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+ </div>
+{% endblock %}
