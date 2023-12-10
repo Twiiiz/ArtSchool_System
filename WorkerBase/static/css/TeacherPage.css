@@ -5,11 +5,13 @@
   display: flex;
   flex-direction: column;
   color: white;
+
+  font-size: 30px;
 }
 
 .action_list {
   width: 100%;
-  background-color: brown;
+  background-color: rgb(90, 153, 173);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -23,7 +25,12 @@ a {
 }
 
 .schedule {
+  width: 20%;
+  margin: auto;
   display: block;
+  font-size: 30px;
+  border: solid 5px white;
+  padding: 5vh;
 }
 
 table {
@@ -32,6 +39,9 @@ table {
   width: 40%;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 15%;
+
+  font-size: 25px;
 }
 
 th, td {
@@ -41,6 +51,12 @@ th, td {
   color: black;
   height: auto;
   width: auto;
+
+  padding: 2%;
+}
+
+button {
+  font-size: 20px;
 }
 
 /* .lessons_done {

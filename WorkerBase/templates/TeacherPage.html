@@ -1,7 +1,7 @@
 {% extends "WorkerPage.html" %}
 {% load static %}
 {% block title %}
-  Сторінка дій Вчителя
+  Сторінка Вчителя
 {% endblock %}
 {% block styles %}
   {{ block.super }}
@@ -10,7 +10,7 @@
 {% block content %}
  {{ block.super }}
  <div class="teacher_action">
-  <h1>Доступні Дії</h1>
+  <h1>Ваша сторінка</h1>
   <div class='action_list'>
     <h2>Доступні Класи:</h2>
     {% if is_None %}
@@ -21,7 +21,7 @@
           <tr>
             <th>Назва класу</th>
             <th>Спеціалізація</th>
-            <th>Дія</th>
+            <th>Дії</th>
           </tr>
         </thead>
         <tbody>

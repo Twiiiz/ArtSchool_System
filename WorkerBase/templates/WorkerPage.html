@@ -12,6 +12,7 @@
 <body>
   {% block content %}
     <div id='user_head'>
+      <h2 id='profile'>Профіль</h2>
       <div id='last_name'>
         {{ w_last_name }}
       </div>
@@ -21,7 +22,7 @@
       <div id='patronymic'>
         {{ w_patronymic }}
       </div>
-      <img src="{% static w_photo %}">
+      <img class='photo' src="{% static w_photo %}">
       <div id='role'>
         {{ w_role }}
       </div>

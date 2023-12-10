@@ -13,8 +13,32 @@ body {
   width: 25%;
   background-color: lightgray;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  font-size: 28px;
+  /* position: fixed; */
+}
+
+#profile {
+  margin-bottom: 15%;
 }
 
 #last_name, #first_name, #patronymic, #role {
   display: inline-block;
+  margin-bottom: 10%;
+}
+
+#patronymic {
+  margin-bottom: 30%;
+}
+
+.photo {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40%;
+  height: 25vh;
+  width: 60%;
+  border-radius: 30%;
 }

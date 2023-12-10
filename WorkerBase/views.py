@@ -125,7 +125,7 @@ def showTeacherLessonsPage(request):
   cursor = connection.cursor()
   cursor.execute("""
                  SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
-                 FROM Disciplines INNER JOIN Lessons ON discipline_id = FK_discipline_id INNER JOIN Classes
+                 FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                  ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
                  WHERE fk_teacher_id = %s AND fk_status_id = 2
                  """, (request.session['worker_id'],))
@@ -134,7 +134,7 @@ def showTeacherLessonsPage(request):
   biggest_start_time = max(lessons_done, key=lambda t: t[3])[3]
   cursor.execute("""
                  SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
-                 FROM Disciplines INNER JOIN Lessons ON discipline_id = FK_discipline_id INNER JOIN Classes
+                 FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                  ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
                  WHERE fk_teacher_id = %s AND fk_status_id = 1 AND (Lessons.[date] > %s OR (Lessons.[date] = %s AND Lessons.start_time > %s))
                  """, (request.session['worker_id'], biggest_date, biggest_date, biggest_start_time))
@@ -158,7 +158,7 @@ def showStudentStatsPage(request, class_id):
                  FROM Students INNER JOIN [Student grades] 
                            ON Students.student_id = [Student grades].fk_student_id INNER JOIN Lessons
                            ON [Student grades].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
-                           ON Lessons.FK_discipline_id = Disciplines.discipline_id INNER JOIN Classes
+                           ON Lessons.fk_discipline_id = Disciplines.discipline_id INNER JOIN Classes
                            ON Lessons.fk_class_id = Classes.class_id
                  WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
                  """, (request.session['worker_id'], class_id))
@@ -168,7 +168,7 @@ def showStudentStatsPage(request, class_id):
                  FROM Students INNER JOIN [Student attendances]
                            ON Students.student_id = [Student attendances].fk_student_id INNER JOIN Lessons
                            ON [Student attendances].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
-                           ON Lessons.FK_discipline_id = Disciplines.discipline_id INNER JOIN Classes
+                           ON Lessons.fk_discipline_id = Disciplines.discipline_id INNER JOIN Classes
                            ON Lessons.fk_class_id = Classes.class_id
                  WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
                  """, (request.session['worker_id'], class_id))
@@ -199,4 +199,19 @@ def showStudentCompPage(request, class_id):
                                               'w_patronymic': request.session['patronymic'],
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
-                                              'student_comp': student_comp})                                               
+                                              'student_comp': student_comp})
+
+def showTeachersPage(request):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT last_name, first_name, patronymic, worker_id
+                 FROM Workers
+                 WHERE fk_role_id = 2
+                 """)
+  teachers = cursor.fetchall()
+  return render(request, 'TeachersList.html', {'w_last_name': request.session['last_name'],
+                                               'w_first_name': request.session['first_name'], 
+                                               'w_patronymic': request.session['patronymic'],
+                                               'w_role': request.session['role'],
+                                               'w_photo': request.session['photo'],
+                                               'teachers': teachers})                                               

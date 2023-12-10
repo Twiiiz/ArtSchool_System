@@ -11,5 +11,6 @@ urlpatterns = [
       path('student_stat/', showStudentStatsPage, name='show-teacher-student-stats-page'),
       path('<int:student_id>/', showStudentPage, name='show-teacher-student-page'),
       path('student_comp/', showStudentCompPage, name='show-teacher-student-comp-page')
-    ]))
+    ])),
+    path('coord_page/view_teachers/', showTeachersPage)
 ]

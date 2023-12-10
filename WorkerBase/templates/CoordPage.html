@@ -1,11 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <h1>Сторінка координатора</h1>
-</body>
-</html>
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Сторінка Координатора
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/CoordPage.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class='content'>
+  <div class='content_header'>
+    <h2>Ваша сторінка</h2>
+  </div>
+  <div class='content_body'>
+    <a href="view_teachers/">Переглянути зареєстрованих у системі викладачів</a>
+    <a href="">Переглянути доступні заняття</a>
+    <a href="">Переглянути зареєстровані у системі класи</a>
+    <a href="" class='a_last'>Зареєструвати нового учня</a>
+  </div>
+ </div>
+{% endblock %}
