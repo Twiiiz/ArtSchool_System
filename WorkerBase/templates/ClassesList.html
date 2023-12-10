@@ -1,0 +1,31 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Перегляд зареєстрованих класів
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class='content'>
+  <h2>Зареєстровані Класи:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Назви</th>
+        <th>Спеціалізація</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for class in classes %}
+        <tr>
+          <td>{{ class.0 }}</td>
+          <td>{{ class.1 }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="">Зареєструвати новий клас</a>
+ </div>
+{% endblock %}

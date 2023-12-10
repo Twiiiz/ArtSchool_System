@@ -214,4 +214,18 @@ def showTeachersPage(request):
                                                'w_patronymic': request.session['patronymic'],
                                                'w_role': request.session['role'],
                                                'w_photo': request.session['photo'],
-                                               'teachers': teachers})                                               
+                                               'teachers': teachers})
+
+def showClassesPage(request):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT Classes.[name], Specialisations.[name]
+                 FROM Specialisations INNER JOIN Classes ON Specialisations.spec_id = Classes.fk_spec_id
+                 """)
+  classes = cursor.fetchall()
+  return render(request, 'ClassesList.html', {'w_last_name': request.session['last_name'],
+                                               'w_first_name': request.session['first_name'], 
+                                               'w_patronymic': request.session['patronymic'],
+                                               'w_role': request.session['role'],
+                                               'w_photo': request.session['photo'],
+                                               'classes': classes})                                                   
