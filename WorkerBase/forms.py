@@ -23,3 +23,10 @@ class StudentGradeForm(forms.Form):
    grade = forms.IntegerField(min_value=1, max_value=5, required=True, label='Оцінка')
    eval_elt = forms.ChoiceField(label='Оцінюваний елемент', required=True)
    lesson = forms.ChoiceField(label='Проведене Заняття', required=True)
+
+class StudentAttendanceForm(forms.Form):
+   student = forms.ChoiceField(label='Учень', required=True)
+   lesson = forms.ChoiceField(label='Проведене Заняття', required=True)
+   attendance = forms.TypedChoiceField(choices=[('', '--- Статус ---'),
+                                                ('відвідано', 'відвідано'),
+                                                ('пропущено', 'пропущено')], coerce=str, required=True, label='Статус')

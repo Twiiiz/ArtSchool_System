@@ -302,4 +302,65 @@ def addStudentGrade(request, class_id):
     system_messages = messages.get_messages(request)
     for message in system_messages:
       pass
-  return render(request, 'FormPage.html', {'form': form})                                                   
+  return render(request, 'FormPage.html', {'form': form})
+
+def addStudentAttendance(request, class_id):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = StudentAttendanceForm(request.POST)
+    cursor.execute("""
+                   SELECT student_id, last_name, first_name, patronymic
+                   FROM Students INNER JOIN [Students in class] 
+                                       ON Students.student_id = [Students in class].fk_student_id INNER JOIN Classes 
+                                       ON [Students in class].fk_class_id = Classes.class_id
+                   WHERE Classes.class_id = %s
+                   """, (class_id,))
+    students = cursor.fetchall()
+    form.fields['student'].choices = [('', '--- Учень ---')] + [(student[0], f'{student[1]} {student[2]} {student[3]}') for student in students]
+    cursor.execute("""
+                   SELECT Lessons.lesson_id, Disciplines.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
+                   FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
+                                   ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
+                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s
+                   """, (request.session['worker_id'], class_id))
+    lessons = cursor.fetchall()
+    form.fields['lesson'].choices = [('', '--- Заняття ---')] +[
+      (lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
+    print('GOT THE FORM')
+    if form.is_valid():
+      grade_info = [form.cleaned_data.get('student'),
+                    form.cleaned_data.get('lesson'),
+                    form.cleaned_data.get('attendance'),]
+      for bla in grade_info:
+        print(bla)
+      print('OKAY')
+      response = redirect('show-teacher-page')
+      response.set_cookie('logged_in', 'True', secure=True)
+      return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = StudentAttendanceForm()
+    cursor.execute("""
+                   SELECT student_id, last_name, first_name, patronymic
+                   FROM Students INNER JOIN [Students in class] 
+                                       ON Students.student_id = [Students in class].fk_student_id INNER JOIN Classes 
+                                       ON [Students in class].fk_class_id = Classes.class_id
+                   WHERE Classes.class_id = %s
+                   """, (class_id,))
+    students = cursor.fetchall()
+    form.fields['student'].choices = [('', '--- Учень ---')] + [(student[0], f'{student[1]} {student[2]} {student[3]}') for student in students]
+    cursor.execute("""
+                   SELECT Lessons.lesson_id, Disciplines.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
+                   FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
+                                   ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
+                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s
+                   """, (request.session['worker_id'], class_id))
+    lessons = cursor.fetchall()
+    form.fields['lesson'].choices = [('', '--- Заняття ---')] +[
+      (lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'form': form})                                                  

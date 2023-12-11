@@ -10,7 +10,8 @@ urlpatterns = [
       path('', showClassPage, name='show-teacher-class-page'),
       path('student_stat/', include([
         path('', showStudentStatsPage, name='show-teacher-student-stats-page'),
-        path('add_grade/', addStudentGrade)
+        path('add_grade/', addStudentGrade),
+        path('add_attendance/', addStudentAttendance)
       ])),
       path('<int:student_id>/', showStudentPage, name='show-teacher-student-page'),
       path('student_comp/', showStudentCompPage, name='show-teacher-student-comp-page')
