@@ -155,7 +155,7 @@ def showStudentStatsPage(request, class_id):
   cursor = connection.cursor()
   cursor.execute("""
                  SELECT Students.last_name, Students.first_name, Classes.[name], Disciplines.[name],
-                 [Evaluated elements].[name], Lessons.[date], Lessons.start_time, grade, Students.student_id, Lessons.lesson_id
+                 [Evaluated elements].[name], Lessons.[date], Lessons.start_time, grade, Students.student_id, Lessons.lesson_id, [Student grades].grade_id
                  FROM Students INNER JOIN [Student grades] 
                            ON Students.student_id = [Student grades].fk_student_id INNER JOIN Lessons
                            ON [Student grades].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
@@ -167,7 +167,7 @@ def showStudentStatsPage(request, class_id):
   student_grades = cursor.fetchall()
   cursor.execute("""
                  SELECT Students.last_name, Students.first_name, Classes.[name],
-                 Disciplines.[name], Lessons.[date], Lessons.start_time, presence, Students.student_id, Lessons.lesson_id
+                 Disciplines.[name], Lessons.[date], Lessons.start_time, presence, Students.student_id, Lessons.lesson_id, [Student attendances].attend_id
                  FROM Students INNER JOIN [Student attendances]
                            ON Students.student_id = [Student attendances].fk_student_id INNER JOIN Lessons
                            ON [Student attendances].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
@@ -308,7 +308,7 @@ def addStudentGrade(request, class_id):
       pass
   return render(request, 'FormPage.html', {'form': form})
 
-def editStudentGrade(request, class_id, student_id, lesson_id):
+def editStudentGrade(request, class_id, grade_id, student_id, lesson_id):
   cursor = connection.cursor()
   if request.method=='POST':
     form = StudentGradeForm(request.POST, is_editing=True)
@@ -328,6 +328,7 @@ def editStudentGrade(request, class_id, student_id, lesson_id):
                     form.cleaned_data.get('lesson')]
       for bla in grade_info:
         print(bla)
+      print(grade_id)
       print('OKAY')
       response = redirect('show-teacher-page')
       response.set_cookie('logged_in', 'True', secure=True)
@@ -356,7 +357,7 @@ def editStudentGrade(request, class_id, student_id, lesson_id):
 def addStudentAttendance(request, class_id):
   cursor = connection.cursor()
   if request.method=='POST':
-    form = StudentAttendanceForm(request.POST)
+    form = StudentAttendanceForm(request.POST, is_editing=False)
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] 
@@ -390,7 +391,7 @@ def addStudentAttendance(request, class_id):
       print('NOT VALID')
       print(request.POST)
   else:
-    form = StudentAttendanceForm()
+    form = StudentAttendanceForm(is_editing=False)
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] 
@@ -412,4 +413,35 @@ def addStudentAttendance(request, class_id):
     system_messages = messages.get_messages(request)
     for message in system_messages:
       pass
-  return render(request, 'FormPage.html', {'form': form})                                                  
+  return render(request, 'FormPage.html', {'form': form})
+
+def editStudentAttendance(request, class_id, attend_id, student_id, lesson_id):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = StudentAttendanceForm(request.POST, is_editing=True)
+    form.fields['student'].choices = [(student_id, 'Цей учень')]
+    form.fields['lesson'].choices = [(lesson_id, 'Це заняття')]
+    print('GOT THE FORM')
+    if form.is_valid():
+      grade_info = [form.cleaned_data.get('student'),
+                    form.cleaned_data.get('lesson'),
+                    form.cleaned_data.get('attendance'),]
+      for bla in grade_info:
+        print(bla)
+      print('OKAY')
+      response = redirect('show-teacher-page')
+      response.set_cookie('logged_in', 'True', secure=True)
+      return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = StudentAttendanceForm(is_editing=True)
+    form.fields['student'].choices = [(student_id, 'Цей учень')]
+    form.fields['student'].initial = student_id
+    form.fields['lesson'].choices = [(lesson_id, 'Це заняття')]
+    form.fields['lesson'].initial = lesson_id
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'form': form})                             

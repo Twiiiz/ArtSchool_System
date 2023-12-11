@@ -37,3 +37,10 @@ class StudentAttendanceForm(forms.Form):
    attendance = forms.TypedChoiceField(choices=[('', '--- Статус ---'),
                                                 ('відвідано', 'відвідано'),
                                                 ('пропущено', 'пропущено')], coerce=str, required=True, label='Статус')
+   
+   def __init__(self, *args, **kwargs):
+       self.is_editing = kwargs.pop('is_editing', False)
+       super(StudentAttendanceForm, self).__init__(*args, **kwargs)
+       if self.is_editing:
+           self.fields['student'].widget = forms.HiddenInput()
+           self.fields['lesson'].widget = forms.HiddenInput()
