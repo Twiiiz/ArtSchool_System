@@ -24,6 +24,13 @@ class StudentGradeForm(forms.Form):
    eval_elt = forms.ChoiceField(label='Оцінюваний елемент', required=True)
    lesson = forms.ChoiceField(label='Проведене Заняття', required=True)
 
+   def __init__(self, *args, **kwargs):
+       self.is_editing = kwargs.pop('is_editing', False)
+       super(StudentGradeForm, self).__init__(*args, **kwargs)
+       if self.is_editing:
+           self.fields['student'].widget = forms.HiddenInput()
+           self.fields['lesson'].widget = forms.HiddenInput()
+
 class StudentAttendanceForm(forms.Form):
    student = forms.ChoiceField(label='Учень', required=True)
    lesson = forms.ChoiceField(label='Проведене Заняття', required=True)

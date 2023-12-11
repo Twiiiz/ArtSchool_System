@@ -154,17 +154,20 @@ def showTeacherLessonsPage(request):
 def showStudentStatsPage(request, class_id):
   cursor = connection.cursor()
   cursor.execute("""
-                 SELECT Students.last_name, Students.first_name, Classes.[name], Disciplines.[name], Lessons.[date], Lessons.start_time, grade
+                 SELECT Students.last_name, Students.first_name, Classes.[name], Disciplines.[name],
+                 [Evaluated elements].[name], Lessons.[date], Lessons.start_time, grade, Students.student_id, Lessons.lesson_id
                  FROM Students INNER JOIN [Student grades] 
                            ON Students.student_id = [Student grades].fk_student_id INNER JOIN Lessons
                            ON [Student grades].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
                            ON Lessons.fk_discipline_id = Disciplines.discipline_id INNER JOIN Classes
-                           ON Lessons.fk_class_id = Classes.class_id
+                           ON Lessons.fk_class_id = Classes.class_id INNER JOIN [Evaluated elements]
+                           ON [Evaluated elements].element_id = [Student grades].fk_eval_elt
                  WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
                  """, (request.session['worker_id'], class_id))
   student_grades = cursor.fetchall()
   cursor.execute("""
-                 SELECT Students.last_name, Students.first_name, Classes.[name], Disciplines.[name], Lessons.[date], Lessons.start_time, presence
+                 SELECT Students.last_name, Students.first_name, Classes.[name],
+                 Disciplines.[name], Lessons.[date], Lessons.start_time, presence, Students.student_id, Lessons.lesson_id
                  FROM Students INNER JOIN [Student attendances]
                            ON Students.student_id = [Student attendances].fk_student_id INNER JOIN Lessons
                            ON [Student attendances].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
@@ -179,7 +182,8 @@ def showStudentStatsPage(request, class_id):
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'student_grades': student_grades,
-                                              'student_attend': student_attend})
+                                              'student_attend': student_attend,
+                                              'id_class': class_id})
 
 def showStudentCompPage(request, class_id):
   cursor = connection.cursor()
@@ -233,7 +237,7 @@ def showClassesPage(request):
 def addStudentGrade(request, class_id):
   cursor = connection.cursor()
   if request.method=='POST':
-    form = StudentGradeForm(request.POST)
+    form = StudentGradeForm(request.POST, is_editing=False)
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] 
@@ -274,7 +278,7 @@ def addStudentGrade(request, class_id):
       print('NOT VALID')
       print(request.POST)
   else:
-    form = StudentGradeForm()
+    form = StudentGradeForm(is_editing=False)
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] 
@@ -303,6 +307,51 @@ def addStudentGrade(request, class_id):
     for message in system_messages:
       pass
   return render(request, 'FormPage.html', {'form': form})
+
+def editStudentGrade(request, class_id, student_id, lesson_id):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = StudentGradeForm(request.POST, is_editing=True)
+    form.fields['student'].choices = [(student_id, 'Цей учень')]
+    cursor.execute("""
+                   SELECT element_id, [name]
+                   FROM [Evaluated elements]
+                   """)
+    eval_elts = cursor.fetchall()
+    form.fields['eval_elt'].choices = [('', '--- Оцінюваний елемент ---')] + [(eval_elt[0], eval_elt[1]) for eval_elt in eval_elts]
+    form.fields['lesson'].choices = [(lesson_id, 'Це заняття')]
+    print('GOT THE FORM')
+    if form.is_valid():
+      grade_info = [form.cleaned_data.get('student'),
+                    form.cleaned_data.get('grade'),
+                    form.cleaned_data.get('eval_elt'),
+                    form.cleaned_data.get('lesson')]
+      for bla in grade_info:
+        print(bla)
+      print('OKAY')
+      response = redirect('show-teacher-page')
+      response.set_cookie('logged_in', 'True', secure=True)
+      return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = StudentGradeForm(is_editing=True)
+    form.fields['student'].choices = [(student_id, 'Цей учень')]
+    form.fields['student'].initial = student_id
+    cursor.execute("""
+                   SELECT element_id, [name]
+                   FROM [Evaluated elements]
+                   """)
+    eval_elts = cursor.fetchall()
+    form.fields['eval_elt'].choices = [('', '--- Оцінюваний елемент ---')] + [(eval_elt[0], eval_elt[1]) for eval_elt in eval_elts]
+    form.fields['lesson'].choices = [(lesson_id, 'Це заняття')]
+    form.fields['lesson'].initial = lesson_id
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'form': form})
+
 
 def addStudentAttendance(request, class_id):
   cursor = connection.cursor()
