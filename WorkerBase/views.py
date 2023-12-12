@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
 from .forms import *
+from datetime import date
 
 
 def handleLogin(request):
@@ -46,7 +47,6 @@ def showCoordPage(request):
      raise Http404
   return render(request, 'CoordPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
-                                            'w_patronymic': request.session['patronymic'],
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo']})
 
@@ -72,7 +72,6 @@ def showTeacherPage(request):
     is_None = False
   return render(request, 'TeacherPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
-                                              'w_patronymic': request.session['patronymic'],
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'is_None': is_None,

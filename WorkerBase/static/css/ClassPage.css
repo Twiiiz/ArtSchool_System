@@ -6,6 +6,7 @@
 
 table {
   display: inline-table;
+  border-collapse: collapse;
 }
 
 th, td {

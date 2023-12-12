@@ -13,18 +13,17 @@
   {% block content %}
     <div id='user_head'>
       <h2 id='profile'>Профіль</h2>
-      <div id='last_name'>
-        {{ w_last_name }}
-      </div>
-      <div id='first_name'>
-        {{ w_first_name }}
-      </div>
-      <div id='patronymic'>
-        {{ w_patronymic }}
-      </div>
-      <img class='photo' src="{% static w_photo %}">
-      <div id='role'>
-        {{ w_role }}
+      <div class='user_data'>
+        <div id='last_name'>
+          {{ w_last_name }}
+        </div>
+        <div id='first_name'>
+          {{ w_first_name }}
+        </div>
+        <img class='photo' src="{% static w_photo %}">
+        <div id='role'>
+          {{ w_role }}
+        </div>
       </div>
     </div>
   {% endblock %}

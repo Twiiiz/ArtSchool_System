@@ -1,4 +1,6 @@
 .teacher_action {
+  height: 92vh;
+  margin-top: 8vh;
   background-color: lightblue;
   width: 100%;
   text-align: center;
@@ -9,28 +11,32 @@
   font-size: 30px;
 }
 
+h1 {
+  font-size: 35px;
+}
+
 .action_list {
   width: 100%;
   background-color: rgb(90, 153, 173);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding-top: 5%;
+  padding-top: 0.5%;
 }
 
 a {
   text-decoration: none;
   color: inherit;
-  font-size: 28px;
 }
 
 .schedule {
   width: 20%;
   margin: auto;
+  margin-bottom: 2%;
   display: block;
   font-size: 30px;
-  border: solid 5px white;
-  padding: 5vh;
+  border: solid 3px white;
+  padding: 2vh;
 }
 
 table {
@@ -41,7 +47,7 @@ table {
   margin-right: auto;
   margin-bottom: 15%;
 
-  font-size: 25px;
+  font-size: 18px;
 }
 
 th, td {
@@ -52,11 +58,11 @@ th, td {
   height: auto;
   width: auto;
 
-  padding: 2%;
+  padding: 1%;
 }
 
 button {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 /* .lessons_done {
