@@ -125,28 +125,24 @@ def showTeacherLessonsPage(request):
                  SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                  FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                  ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
-                 WHERE fk_teacher_id = %s AND fk_status_id = 2
-                 """, (request.session['worker_id'],))
+                 WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (request.session['worker_id'], request.session['from_date'], request.session['to_date']))
   lessons_done = cursor.fetchall()
-  biggest_date = max(lessons_done, key=lambda t: t[2])[2]
-  biggest_start_time = max(lessons_done, key=lambda t: t[3])[3]
+  # biggest_date = max(lessons_done, key=lambda t: t[2])[2]
+  # biggest_start_time = max(lessons_done, key=lambda t: t[3])[3]
   cursor.execute("""
                  SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                  FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                  ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
-                 WHERE fk_teacher_id = %s AND fk_status_id = 1 AND (Lessons.[date] > %s OR (Lessons.[date] = %s AND Lessons.start_time > %s))
-                 """, (request.session['worker_id'], biggest_date, biggest_date, biggest_start_time))
+                 WHERE fk_teacher_id = %s AND fk_status_id = 1 AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (request.session['worker_id'], request.session['from_date'], request.session['to_date']))
   lessons_planned = cursor.fetchall()
-  is_None = True
-  if len(lessons_planned) > 0:
-    is_None = False
   return render(request, 'TeacherLessons.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'lessons_done': lessons_done,
-                                              'lessons_planned': lessons_planned,
-                                              'is_None': is_None})
+                                              'lessons_planned': lessons_planned,})
 
 def showStudentStatsPage(request, class_id):
   cursor = connection.cursor()
@@ -159,8 +155,8 @@ def showStudentStatsPage(request, class_id):
                            ON Lessons.fk_discipline_id = Disciplines.discipline_id INNER JOIN Classes
                            ON Lessons.fk_class_id = Classes.class_id INNER JOIN [Evaluated elements]
                            ON [Evaluated elements].element_id = [Student grades].fk_eval_elt
-                 WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
-                 """, (request.session['worker_id'], class_id))
+                 WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
   student_grades = cursor.fetchall()
   cursor.execute("""
                  SELECT Students.last_name, Students.first_name, Classes.[name],
@@ -170,8 +166,8 @@ def showStudentStatsPage(request, class_id):
                            ON [Student attendances].fk_lesson_id = Lessons.lesson_id INNER JOIN Disciplines
                            ON Lessons.fk_discipline_id = Disciplines.discipline_id INNER JOIN Classes
                            ON Lessons.fk_class_id = Classes.class_id
-                 WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s
-                 """, (request.session['worker_id'], class_id))
+                 WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
   student_attend = cursor.fetchall()
   return render(request, 'StudentStats.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
@@ -192,7 +188,8 @@ def showStudentCompPage(request, class_id):
                              ON [Student competencies].fk_student_id = Students.student_id INNER JOIN [Students in class]
                              ON Students.student_id = [Students in class].fk_student_id, [Competence levels]
                  WHERE [Students in class].fk_class_id = %s AND [Student competencies].fk_level_id = [Competence levels].level_id
-                 """, (class_id,))
+                       AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (class_id, request.session['from_date'], request.session['to_date'] ))
   student_comp = cursor.fetchall()
   return render(request, 'StudentComp.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
@@ -228,6 +225,8 @@ def showClassesPage(request):
                                                'classes': classes})
 
 def addStudentGrade(request, class_id):
+  print(request.session['from_date'])
+  print(request.session['to_date'])
   cursor = connection.cursor()
   if request.method=='POST':
     form = StudentGradeForm(request.POST, is_editing=False)
@@ -250,8 +249,8 @@ def addStudentGrade(request, class_id):
                    SELECT Lessons.lesson_id, Disciplines.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                    FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                                    ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
-                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s
-                   """, (request.session['worker_id'], class_id))
+                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                   """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [('', '--- Заняття ---')] +[
       (lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
@@ -291,8 +290,8 @@ def addStudentGrade(request, class_id):
                    SELECT Lessons.lesson_id, Disciplines.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                    FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                                    ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
-                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s
-                   """, (request.session['worker_id'], class_id))
+                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                   """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [('', '--- Заняття ---')] +[
       (lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
@@ -364,8 +363,8 @@ def addStudentAttendance(request, class_id):
                    SELECT Lessons.lesson_id, Disciplines.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                    FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                                    ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
-                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s
-                   """, (request.session['worker_id'], class_id))
+                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                   """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [('', '--- Заняття ---')] +[
       (lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
@@ -398,8 +397,8 @@ def addStudentAttendance(request, class_id):
                    SELECT Lessons.lesson_id, Disciplines.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                    FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
                                    ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id
-                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s
-                   """, (request.session['worker_id'], class_id))
+                   WHERE fk_teacher_id = %s AND fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                   """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [('', '--- Заняття ---')] +[
       (lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
@@ -439,7 +438,10 @@ def editStudentAttendance(request, class_id, attend_id, student_id, lesson_id):
       pass
   return render(request, 'FormPage.html', {'form': form})
 
-def showDatesForm(request, class_id):
+def showDatesFormStudent(request, class_id):
+  if 'from_date' in request.session and 'to_date' in request.session:
+    del request.session['from_date']
+    del request.session['to_date']
   if request.method=='POST':
     form = DatesForm(request.POST)
     print('GOT THE FORM')
@@ -469,4 +471,33 @@ def showDatesForm(request, class_id):
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
-                                            'form': form})                         
+                                            'form': form})
+
+def showDatesFormLessons(request):
+  if 'from_date' in request.session and 'to_date' in request.session:
+    del request.session['from_date']
+    del request.session['to_date']
+
+  if request.method=='POST':
+    form = DatesForm(request.POST)
+    print('GOT THE FORM')
+    if form.is_valid():
+      from_date = form.cleaned_data.get('from_date')
+      to_date = form.cleaned_data.get('to_date')
+      request.session['from_date'] = from_date.strftime('%Y-%m-%d')
+      request.session['to_date'] = to_date.strftime('%Y-%m-%d')
+      response = redirect('show-teacher-lesson-page')
+      return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = DatesForm()
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'DatesForm.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})                     

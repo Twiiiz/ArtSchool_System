@@ -5,12 +5,13 @@ urlpatterns = [
     path('', handleLogin),
     path('coord_page/', showCoordPage),
     path('teacher_page/', showTeacherPage, name='show-teacher-page'),
-    path('teacher_page/lessons/', showTeacherLessonsPage, name='show-teacher-lesson-page'),
+    path('teacher_page/fill_dates/', showDatesFormLessons, name='show-dates-form-lessons'),
+    path('teacher_page/fill_dates/lessons/', showTeacherLessonsPage, name='show-teacher-lesson-page'),
     path('teacher_page/class/<int:class_id>/', include([
       path('', showClassPage, name='show-teacher-class-page'),
       path('<int:student_id>/', showStudentPage, name='show-teacher-student-page'),
       path('fill_dates/', include([
-        path('', showDatesForm, name='show-dates-form'),
+        path('', showDatesFormStudent, name='show-dates-form-students'),
         path('student_stat/', include([
         path('', showStudentStatsPage, name='show-teacher-student-stats-page'),
         path('add_grade/', addStudentGrade),

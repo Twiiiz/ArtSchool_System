@@ -1,3 +1,23 @@
+.content {
+  height: 94vh;
+  width: 100%;
+  margin-top: 6vh;
+  background-color: lightblue;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background-color: rgb(90, 153, 173);
+}
+
+h1 {
+  margin-bottom: 0;
+  padding-top: auto;
+  padding-bottom: auto;
+  height: 8%;
+  background-color: lightblue;
+}
+
 table {
   border-collapse: collapse;
 }
@@ -6,10 +26,46 @@ th, td {
   border: 1px solid black;
 }
 
-.lessons_done {
-  margin-right: 5%;
+.lesson_tables {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
 }
 
-.content {
-  width: 100%;
+.lessons_planned {
+  height: 100%;
+  margin-top: 0;
+  width: 50%;
+  text-align: center;
+}
+
+.planned_table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lessons_done {
+  width: 50%;
+  text-align: center;
+}
+
+.done_table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lessons_action {
+  height: 15%;
+  background-color: rgb(90, 153, 173);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  font-size: 32px;
+  border: 5px solid white;
+  padding: 2vh;
 }

@@ -25,7 +25,7 @@
         {% endfor %}
       </tbody>
     </table>
-    <a href="{% url 'show-dates-form' class_id=class_id %}?redirect_to={{ 'stats' }}" class='schedule'>Переглянути оцінки та відвідуваність учнів класу</a>
-    <a href="{% url 'show-dates-form' class_id=class_id %}?redirect_to={{ 'comp' }}">Переглянути здобуті учнями класу компетентності</a>
+    <a href="{% url 'show-dates-form-students' class_id=class_id %}?redirect_to={{ 'stats' }}" class='schedule'>Переглянути оцінки та відвідуваність учнів класу</a>
+    <a href="{% url 'show-dates-form-students' class_id=class_id %}?redirect_to={{ 'comp' }}">Переглянути здобуті учнями класу компетентності</a>
   </div>
 {% endblock %}
