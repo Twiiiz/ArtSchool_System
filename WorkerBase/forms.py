@@ -44,3 +44,17 @@ class StudentAttendanceForm(forms.Form):
        if self.is_editing:
            self.fields['student'].widget = forms.HiddenInput()
            self.fields['lesson'].widget = forms.HiddenInput()
+
+class DatesForm(forms.Form):
+    from_date = forms.DateField(label='Від', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    to_date = forms.DateField(label='До', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+
+    def clean(self):
+       cleaned_data = super().clean()
+       date1 = cleaned_data.get('from_date')
+       date2 = cleaned_data.get('to_date')
+
+       if date1 and date2 and date1 > date2:
+           raise forms.ValidationError("Дата у полі 'від' повинна бути менша, ніж дата у полі 'до'")
+
+       return cleaned_data

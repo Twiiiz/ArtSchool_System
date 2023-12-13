@@ -2,6 +2,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import connection
+from django.urls import reverse
 from .forms import *
 from datetime import date
 
@@ -91,7 +92,6 @@ def showClassPage(request, class_id):
   class_students = cursor.fetchall()
   return render(request, 'ClassPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
-                                            'w_patronymic': request.session['patronymic'],
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
                                             'class_students': class_students,
@@ -114,7 +114,6 @@ def showStudentPage(request, class_id, student_id):
   print(student_data[-1])
   return render(request, 'StudentPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
-                                              'w_patronymic': request.session['patronymic'],
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'student_data': student_data,
@@ -143,7 +142,6 @@ def showTeacherLessonsPage(request):
     is_None = False
   return render(request, 'TeacherLessons.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
-                                              'w_patronymic': request.session['patronymic'],
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'lessons_done': lessons_done,
@@ -177,7 +175,6 @@ def showStudentStatsPage(request, class_id):
   student_attend = cursor.fetchall()
   return render(request, 'StudentStats.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
-                                              'w_patronymic': request.session['patronymic'],
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'student_grades': student_grades,
@@ -199,7 +196,6 @@ def showStudentCompPage(request, class_id):
   student_comp = cursor.fetchall()
   return render(request, 'StudentComp.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
-                                              'w_patronymic': request.session['patronymic'],
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'student_comp': student_comp})
@@ -214,7 +210,6 @@ def showTeachersPage(request):
   teachers = cursor.fetchall()
   return render(request, 'TeachersList.html', {'w_last_name': request.session['last_name'],
                                                'w_first_name': request.session['first_name'], 
-                                               'w_patronymic': request.session['patronymic'],
                                                'w_role': request.session['role'],
                                                'w_photo': request.session['photo'],
                                                'teachers': teachers})
@@ -228,7 +223,6 @@ def showClassesPage(request):
   classes = cursor.fetchall()
   return render(request, 'ClassesList.html', {'w_last_name': request.session['last_name'],
                                                'w_first_name': request.session['first_name'], 
-                                               'w_patronymic': request.session['patronymic'],
                                                'w_role': request.session['role'],
                                                'w_photo': request.session['photo'],
                                                'classes': classes})
@@ -443,4 +437,36 @@ def editStudentAttendance(request, class_id, attend_id, student_id, lesson_id):
     system_messages = messages.get_messages(request)
     for message in system_messages:
       pass
-  return render(request, 'FormPage.html', {'form': form})                             
+  return render(request, 'FormPage.html', {'form': form})
+
+def showDatesForm(request, class_id):
+  if request.method=='POST':
+    form = DatesForm(request.POST)
+    print('GOT THE FORM')
+    if form.is_valid():
+      from_date = form.cleaned_data.get('from_date')
+      to_date = form.cleaned_data.get('to_date')
+      request.session['from_date'] = from_date.strftime('%Y-%m-%d')
+      request.session['to_date'] = to_date.strftime('%Y-%m-%d')
+      if request.GET.get('redirect_to') is not None:
+        if request.GET.get('redirect_to') == 'stats':
+          response = redirect(reverse('show-teacher-student-stats-page', kwargs={'class_id':class_id}))
+          return response
+        elif request.GET.get('redirect_to') == 'comp':
+          response = redirect(reverse('show-teacher-student-comp-page', kwargs={'class_id':class_id}))
+          return response
+      else:
+        print('ERROR! NULL PARAMETER')
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = DatesForm()
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'DatesForm.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})                         

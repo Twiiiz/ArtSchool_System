@@ -1,0 +1,20 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Сторінка Вчителя
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/TeacherPage.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class="teacher_action">
+  <h1>Оберіть дати</h1>
+  <form method='POST'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Підтвердити" class='submit_button' />
+  </form>
+ </div>
+{% endblock %}
