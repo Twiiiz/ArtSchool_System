@@ -58,3 +58,10 @@ class DatesForm(forms.Form):
            raise forms.ValidationError("Дата у полі 'від' повинна бути менша, ніж дата у полі 'до'")
 
        return cleaned_data
+    
+class TeacherLessonDone(forms.Form):
+    discipline = forms.ChoiceField(label='Дисципліна', required=True)
+    class_students = forms.ChoiceField(label='Клас', required=True)
+    date = forms.DateField(label='Дата', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    start_time = forms.TimeField(input_formats=['%H:%M'], label='Час початку заняття')
+    end_time = forms.TimeField(input_formats=['%H:%M'], label='Час кінця заняття')

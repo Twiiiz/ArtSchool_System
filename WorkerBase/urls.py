@@ -7,6 +7,8 @@ urlpatterns = [
     path('teacher_page/', showTeacherPage, name='show-teacher-page'),
     path('teacher_page/fill_dates/', showDatesFormLessons, name='show-dates-form-lessons'),
     path('teacher_page/fill_dates/lessons/', showTeacherLessonsPage, name='show-teacher-lesson-page'),
+    path('teacher_page/fill_dates/lessons/add_lesson-done', addTeacherLessonDone, name='add-teacher-lesson-done'),
+    path('teacher_page/fill_dates/lessons/edit_lesson-done_<int:lesson_id>', editTeacherLessonDone, name='edit-teacher-lesson-done'),
     path('teacher_page/class/<int:class_id>/', include([
       path('', showClassPage, name='show-teacher-class-page'),
       path('<int:student_id>/', showStudentPage, name='show-teacher-student-page'),
