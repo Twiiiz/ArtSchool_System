@@ -1,0 +1,37 @@
+.content {
+  background-color: rgb(90, 153, 173);
+  height: 94vh;
+  width: 100%;
+  margin-top: 6vh;
+  color: white;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15vh;
+  color: black;
+  background-color: white;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+h1 {
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.add_record {
+  font-size: 30px;
+  border: solid 3px white;
+  padding: 2vh;
+}

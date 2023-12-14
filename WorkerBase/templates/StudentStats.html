@@ -12,71 +12,79 @@
  <div class='content'>
   <h1>Статистика учнів</h1>
   <div class='stats'>
-    <div class='grades'>
-      <h2>Оцінки</h2>
-      <table class='grade_table'>
-        <thead>
-          <tr>
-            <th>Прізвище</th>
-            <th>Ім'я</th>
-            <th>Клас</th>
-            <th>Дисципліна</th>
-            <th>Оцінюваний елемент</th>
-            <th>Дата заняття</th>
-            <th>Початок заняття</th>
-            <th>Оцінка</th>
-            <th>Дії</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for grade in student_grades %}
-          <tr>
-            <td>{{ grade.0 }}</td>
-            <td>{{ grade.1 }}</td>
-            <td>{{ grade.2 }}</td>
-            <td>{{ grade.3 }}</td>
-            <td>{{ grade.4 }}</td>
-            <td>{{ grade.5 }}</td>
-            <td>{{ grade.6 }}</td>
-            <td>{{ grade.7 }}</td>
-            <td><button onclick="location.href='{% url 'edit-student-grade' class_id=id_class grade_id=grade.10 student_id=grade.8 lesson_id=grade.9 %}'">Редагувати</button></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class='tables'>
+      <div class='grades'>
+        <h2 id='h2_grades'>Оцінки</h2>
+        <table class='grade_table'>
+          <thead>
+            <tr>
+              <th>Прізвище</th>
+              <th>Ім'я</th>
+              <th>Клас</th>
+              <th>Дисципліна</th>
+              <th>Оцінюваний елемент</th>
+              <th>Дата заняття</th>
+              <th>Початок заняття</th>
+              <th>Оцінка</th>
+              <th>Дії</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for grade in student_grades %}
+            <tr>
+              <td>{{ grade.0 }}</td>
+              <td>{{ grade.1 }}</td>
+              <td>{{ grade.2 }}</td>
+              <td>{{ grade.3 }}</td>
+              <td>{{ grade.4 }}</td>
+              <td>{{ grade.5 }}</td>
+              <td>{{ grade.6 }}</td>
+              <td>{{ grade.7 }}</td>
+              <td><button onclick="location.href='{% url 'edit-student-grade' class_id=id_class grade_id=grade.10 student_id=grade.8 lesson_id=grade.9 %}'">Редагувати</button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class='attend'>
+        <h2 id='h2_attends'>Відвідування занять</h2>
+        <table class='attend_table'>
+          <thead>
+            <tr>
+              <th>Прізвище</th>
+              <th>Ім'я</th>
+              <th>Клас</th>
+              <th>Дисципліна</th>
+              <th>Дата заняття</th>
+              <th>Початок заняття</th>
+              <th>Статус</th>
+              <th>Дії</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attend in student_attend %}
+            <tr>
+              <td>{{ attend.0 }}</td>
+              <td>{{ attend.1 }}</td>
+              <td>{{ attend.2 }}</td>
+              <td>{{ attend.3 }}</td>
+              <td>{{ attend.4 }}</td>
+              <td>{{ attend.5 }}</td>
+              <td>{{ attend.6 }}</td>
+              <td><button onclick="location.href='{% url 'edit-student-attendance' class_id=id_class attend_id=attend.9 student_id=attend.7 lesson_id=attend.8 %}'">
+                Редагувати
+              </button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class='attend'>
-      <h2>Відвідування занять</h2>
-      <table class='attend_table'>
-        <thead>
-          <tr>
-            <th>Прізвище</th>
-            <th>Ім'я</th>
-            <th>Клас</th>
-            <th>Дисципліна</th>
-            <th>Дата заняття</th>
-            <th>Початок заняття</th>
-            <th>Статус</th>
-            <th>Дії</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for attend in student_attend %}
-          <tr>
-            <td>{{ attend.0 }}</td>
-            <td>{{ attend.1 }}</td>
-            <td>{{ attend.2 }}</td>
-            <td>{{ attend.3 }}</td>
-            <td>{{ attend.4 }}</td>
-            <td>{{ attend.5 }}</td>
-            <td>{{ attend.6 }}</td>
-            <td><button onclick="location.href='{% url 'edit-student-attendance' class_id=id_class attend_id=attend.9 student_id=attend.7 lesson_id=attend.8 %}'">
-              Редагувати
-            </button></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class='charts'>
+      <h2 id='h2_chart'>Діаграма відвідувань занять учнями</h2>
+      <div id='attend_chart'>
+        <canvas id="pie-chart"></canvas>
+      </div>
     </div>
   </div>
   <div class='action'>
@@ -84,4 +92,34 @@
     <a href="add_attendance/">Зареєструвати відвідування заняття учнем</a>
   </div>
  </div>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+ <script>
+  var config = {
+    type: 'pie',
+    data: {
+      datasets: [{
+        data: {{ chart_data|safe }},
+        backgroundColor: [
+          '#2ECC71', '#E74C3C'
+        ],
+        label: 'Статус'
+      }],
+      labels: {{ labels|safe }}
+    },
+    options: {
+      responsive: true,
+      legend: {
+        labels: {
+          fontColor: '#FDFEFE'
+        }
+      }
+    }
+  };
+
+  window.onload = function() {
+    var ctx = document.getElementById('pie-chart').getContext('2d');
+    window.myPie = new Chart(ctx, config);
+  };
+
+</script>
 {% endblock %}

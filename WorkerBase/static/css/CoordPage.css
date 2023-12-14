@@ -1,5 +1,6 @@
 .content {
-  height: 100vh;
+  height: 92vh;
+  margin-top: 8vh;
   width: 100%;
   text-align: center;
   display: flex;
@@ -31,7 +32,7 @@ a {
   margin-bottom: 4%;
   width: 35%;
   border: 5px solid white;
-  padding: 5vh;
+  padding: 3.5vh;
 }
 
 .a_last {

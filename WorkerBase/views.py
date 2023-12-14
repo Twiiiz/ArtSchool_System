@@ -46,14 +46,6 @@ def handleLogin(request):
       pass
   return render(request, 'UserEntry.html', {'form': form})
 
-def showCoordPage(request):
-  if not request.COOKIES.get('logged_in') or request.session['role'] != 'Координатор':
-     raise Http404
-  return render(request, 'CoordPage.html', {'w_last_name': request.session['last_name'],
-                                            'w_first_name': request.session['first_name'], 
-                                            'w_role': request.session['role'],
-                                            'w_photo': request.session['photo']})
-
 def showTeacherPage(request):
   if not request.COOKIES.get('logged_in') or request.session['role'] != 'Вчитель':
      raise Http404
@@ -165,13 +157,24 @@ def showStudentStatsPage(request, class_id):
                  WHERE Lessons.fk_teacher_id = %s AND Lessons.fk_status_id = 2 AND Classes.class_id = %s AND Lessons.[date] >= %s AND Lessons.[date] <= %s
                  """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
   student_attend = cursor.fetchall()
+  present_count = 0
+  absent_count = 0
+  for student in student_attend:
+    if student[6]=='відвідано':
+      present_count+=1
+    else:
+      absent_count+=1
+  chart_data = [present_count, absent_count]
+  labels = ['відвідано', 'пропущено']
   return render(request, 'StudentStats.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
                                               'student_grades': student_grades,
                                               'student_attend': student_attend,
-                                              'id_class': class_id})
+                                              'id_class': class_id,
+                                              'chart_data': chart_data,
+                                              'labels': labels})
 
 def showStudentCompPage(request, class_id):
   cursor = connection.cursor()
@@ -184,41 +187,22 @@ def showStudentCompPage(request, class_id):
                              ON [Student competencies].fk_student_id = Students.student_id INNER JOIN [Students in class]
                              ON Students.student_id = [Students in class].fk_student_id, [Competence levels]
                  WHERE [Students in class].fk_class_id = %s AND [Student competencies].fk_level_id = [Competence levels].level_id
-                       AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                       AND [Student competencies].[date_time] >= %s AND [Student competencies].[date_time] <= %s
                  """, (class_id, request.session['from_date'], request.session['to_date'] ))
   student_comp = cursor.fetchall()
+  cursor.execute("""
+                 SELECT [name]
+                 FROM Classes
+                 WHERE class_id = %s
+                 """, (class_id,))
+  class_name = cursor.fetchone()
   return render(request, 'StudentComp.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
                                               'w_photo': request.session['photo'],
-                                              'student_comp': student_comp})
-
-def showTeachersPage(request):
-  cursor = connection.cursor()
-  cursor.execute("""
-                 SELECT last_name, first_name, patronymic, worker_id
-                 FROM Workers
-                 WHERE fk_role_id = 2
-                 """)
-  teachers = cursor.fetchall()
-  return render(request, 'TeachersList.html', {'w_last_name': request.session['last_name'],
-                                               'w_first_name': request.session['first_name'], 
-                                               'w_role': request.session['role'],
-                                               'w_photo': request.session['photo'],
-                                               'teachers': teachers})
-
-def showClassesPage(request):
-  cursor = connection.cursor()
-  cursor.execute("""
-                 SELECT Classes.[name], Specialisations.[name]
-                 FROM Specialisations INNER JOIN Classes ON Specialisations.spec_id = Classes.fk_spec_id
-                 """)
-  classes = cursor.fetchall()
-  return render(request, 'ClassesList.html', {'w_last_name': request.session['last_name'],
-                                               'w_first_name': request.session['first_name'], 
-                                               'w_role': request.session['role'],
-                                               'w_photo': request.session['photo'],
-                                               'classes': classes})
+                                              'student_comp': student_comp,
+                                              'class_name': class_name[0],
+                                              'id_class': class_id})
 
 def addStudentGrade(request, class_id):
   print(request.session['from_date'])
@@ -582,4 +566,112 @@ def editTeacherLessonDone(request, lesson_id):
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
-                                            'form': form})                       
+                                            'form': form})
+
+def handleStudentComp(request, class_id):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = StudentCompForm(request.POST)
+    cursor.execute("""
+                   SELECT skill_id, [Discipline skills].[name], Disciplines.[name]
+                   FROM [Discipline skills] INNER JOIN Disciplines ON fk_discipline_id = discipline_id
+                   WHERE Disciplines.discipline_id IN (SELECT fk_discipline_id
+                                                       FROM [Teacher disciplines]
+                                                       WHERE fk_teacher_id = %s)
+                   """, (request.session['worker_id'],))
+    skills = cursor.fetchall()
+    form.fields['skill'].choices = [(skill[0], f'Дисципліна: {skill[1]}, Компетенція: {skill[2]}') for skill in skills]
+    cursor.execute("""
+                   SELECT student_id, last_name, first_name, patronymic
+                   FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
+                   WHERE fk_class_id = %s
+                   """, (class_id,))
+    students = cursor.fetchall()
+    form.fields['student'].choices = [(student[0], f'{student[1]} {student[2]} {student[3]}') for student in students]
+    cursor.execute("""
+                   SELECT *
+                   FROM [Competence levels]
+                   """)
+    levels = cursor.fetchall()
+    form.fields['level'].choices = [(level[0], f'{level[1]}') for level in levels]
+    if form.is_valid():
+      print(request.POST)
+      if request.GET.get('action_type') is not None:
+        if request.GET.get('action_type') == 'insert':
+          print('INSERT')
+        elif request.GET.get('action_type') == 'alter':
+          print('ALTER')
+        response = redirect('show-teacher-student-comp-page', class_id=class_id)
+        return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = StudentCompForm()
+    cursor.execute("""
+                   SELECT skill_id, [Discipline skills].[name], Disciplines.[name]
+                   FROM [Discipline skills] INNER JOIN Disciplines ON fk_discipline_id = discipline_id
+                   WHERE Disciplines.discipline_id IN (SELECT fk_discipline_id
+                                                       FROM [Teacher disciplines]
+                                                       WHERE fk_teacher_id = %s)
+                   """, (request.session['worker_id'],))
+    skills = cursor.fetchall()
+    form.fields['skill'].choices = [(skill[0], f'Дисципліна: {skill[1]}, Компетенція: {skill[2]}') for skill in skills]
+    cursor.execute("""
+                   SELECT student_id, last_name, first_name, patronymic
+                   FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
+                   WHERE fk_class_id = %s
+                   """, (class_id,))
+    students = cursor.fetchall()
+    form.fields['student'].choices = [(student[0], f'{student[1]} {student[2]} {student[3]}') for student in students]
+    cursor.execute("""
+                   SELECT *
+                   FROM [Competence levels]
+                   """)
+    levels = cursor.fetchall()
+    form.fields['level'].choices = [(level[0], f'{level[1]}') for level in levels]
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})
+
+
+
+def showCoordPage(request):
+  if not request.COOKIES.get('logged_in') or request.session['role'] != 'Координатор':
+     raise Http404
+  return render(request, 'CoordPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo']})                                            
+
+def showTeachersPage(request):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT last_name, first_name, patronymic, worker_id
+                 FROM Workers
+                 WHERE fk_role_id = 2
+                 """)
+  teachers = cursor.fetchall()
+  return render(request, 'TeachersList.html', {'w_last_name': request.session['last_name'],
+                                               'w_first_name': request.session['first_name'], 
+                                               'w_role': request.session['role'],
+                                               'w_photo': request.session['photo'],
+                                               'teachers': teachers})
+
+def showClassesPage(request):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT Classes.[name], Specialisations.[name]
+                 FROM Specialisations INNER JOIN Classes ON Specialisations.spec_id = Classes.fk_spec_id
+                 """)
+  classes = cursor.fetchall()
+  return render(request, 'ClassesList.html', {'w_last_name': request.session['last_name'],
+                                               'w_first_name': request.session['first_name'], 
+                                               'w_role': request.session['role'],
+                                               'w_photo': request.session['photo'],
+                                               'classes': classes})                   

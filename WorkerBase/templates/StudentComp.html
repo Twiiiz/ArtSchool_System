@@ -10,8 +10,8 @@
 {% block content %}
  {{ block.super }}
  <div class='content'>
-  <h1>Компетентності учнів класу %вставити назву класу%</h1>
-  <table class='grade_table'>
+  <h1>Компетентності учнів класу '{{ class_name }}'</h1>
+  <table class='comp_table'>
     <thead>
       <tr>
         <th>Прізвище</th>
@@ -20,6 +20,7 @@
         <th>Дисципліна</th>
         <th>Рівень оволодіння</th>
         <th>Дата+час оцінення</th>
+        <th>Дії</th>
       </tr>
     </thead>
     <tbody>
@@ -31,9 +32,13 @@
         <td>{{ comp.3 }}</td>
         <td>{{ comp.4 }}</td>
         <td>{{ comp.5 }}</td>
+        <td><button onclick="location.href='{% url 'handle-comp' class_id=id_class %}?action_type={{ 'alter' }}'">
+          Редагувати
+        </button></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  <a href="{% url 'handle-comp' class_id=id_class %}?action_type={{ 'insert' }}" class='add_record'>Зареєструвати компетентність учня</a>
  </div>
 {% endblock %}

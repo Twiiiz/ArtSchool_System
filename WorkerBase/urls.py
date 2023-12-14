@@ -3,7 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('', handleLogin),
-    path('coord_page/', showCoordPage),
     path('teacher_page/', showTeacherPage, name='show-teacher-page'),
     path('teacher_page/fill_dates/', showDatesFormLessons, name='show-dates-form-lessons'),
     path('teacher_page/fill_dates/lessons/', showTeacherLessonsPage, name='show-teacher-lesson-page'),
@@ -21,9 +20,11 @@ urlpatterns = [
         path('edit_grade_<int:grade_id>_<int:student_id>_<int:lesson_id>/', editStudentGrade, name='edit-student-grade'),
         path('edit_attendance_<int:attend_id>_<int:student_id>_<int:lesson_id>/', editStudentAttendance, name='edit-student-attendance')
       ])),
-      path('student_comp/', showStudentCompPage, name='show-teacher-student-comp-page')
+      path('student_comp/', showStudentCompPage, name='show-teacher-student-comp-page'),
+      path('student_comp/add_comp/', handleStudentComp, name='handle-comp')
       ])),
     ])),
+    path('coord_page/', showCoordPage),
     path('coord_page/view_teachers/', showTeachersPage),
     path('coord_page/view_classes/', showClassesPage),
 ]

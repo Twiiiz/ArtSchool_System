@@ -10,14 +10,6 @@ class LoginForm(forms.Form):
 #    patronymic = forms.CharField(max_length=50, label="По-батькові")
 #    date_of_birth = forms.DateField(label='Дата народження')
 
-# class TeacherForm(forms.Form):
-#       first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
-#       last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
-#       patronymic = forms.CharField(max_length=50, label="По-батькові")
-
-#       login = forms.CharField(max_length=20, required=True, label='Логін', widget=forms.TextInput(attrs={'class': 'username'}))
-#       password = forms.CharField(max_length=20, required=True, label='Пароль', widget=forms.PasswordInput(attrs={'class': 'password'}))
-
 class StudentGradeForm(forms.Form):
    student = forms.ChoiceField(label='Учень', required=True)
    grade = forms.IntegerField(min_value=1, max_value=5, required=True, label='Оцінка')
@@ -65,3 +57,25 @@ class TeacherLessonDone(forms.Form):
     date = forms.DateField(label='Дата', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     start_time = forms.TimeField(input_formats=['%H:%M'], label='Час початку заняття')
     end_time = forms.TimeField(input_formats=['%H:%M'], label='Час кінця заняття')
+
+class StudentCompForm(forms.Form):
+    student = forms.ChoiceField(label='Учень', required=True)
+    level = forms.ChoiceField(label='Рівень засвоєння', required=True)
+    skill = forms.ChoiceField(label='Вміння', required=True)
+    date = forms.DateField(label='Дата', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    time = forms.TimeField(input_formats=['%H:%M'], label='Час')
+    # date_time = forms.DateTimeField(input_formats=['%Y-%m-%d %H:%M'])
+    # def __init__(self, *args, **kwargs):
+    #    super(StudentCompForm, self).__init__(*args, **kwargs)
+    #    self.fields['date_time'].widget = forms.DateTimeInput(attrs={
+    #        'type': 'datetime-local',
+    #        'step': '60',
+    #    })
+
+# class TeacherForm(forms.Form):
+#       first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
+#       last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
+#       patronymic = forms.CharField(max_length=50, label="По-батькові")
+
+#       login = forms.CharField(max_length=20, required=True, label='Логін', widget=forms.TextInput(attrs={'class': 'username'}))
+#       password = forms.CharField(max_length=20, required=True, label='Пароль', widget=forms.PasswordInput(attrs={'class': 'password'}))
