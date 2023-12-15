@@ -5,11 +5,12 @@
 {% endblock %}
 {% block styles %}
   {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/TeachersList.css' %}">
 {% endblock %}
 {% block content %}
  {{ block.super }}
  <div class='content'>
-  <h2>Зареєстровані Вчителі:</h2>
+  <h1>Зареєстровані Вчителі:</h1>
   <table>
     <thead>
       <tr>
@@ -28,6 +29,6 @@
       {% endfor %}
     </tbody>
   </table>
-  <a href="">Зареєструвати нового вчителя</a>
+  <a href="{% url 'add-teacher' %}" class='register'>Зареєструвати нового вчителя</a>
  </div>
 {% endblock %}

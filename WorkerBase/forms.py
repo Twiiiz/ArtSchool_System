@@ -64,18 +64,16 @@ class StudentCompForm(forms.Form):
     skill = forms.ChoiceField(label='Вміння', required=True)
     date = forms.DateField(label='Дата', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     time = forms.TimeField(input_formats=['%H:%M'], label='Час')
-    # date_time = forms.DateTimeField(input_formats=['%Y-%m-%d %H:%M'])
-    # def __init__(self, *args, **kwargs):
-    #    super(StudentCompForm, self).__init__(*args, **kwargs)
-    #    self.fields['date_time'].widget = forms.DateTimeInput(attrs={
-    #        'type': 'datetime-local',
-    #        'step': '60',
-    #    })
 
-# class TeacherForm(forms.Form):
-#       first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
-#       last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
-#       patronymic = forms.CharField(max_length=50, label="По-батькові")
+class CreateTeacherForm(forms.Form):
+      first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
+      last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
+      patronymic = forms.CharField(max_length=50, label="По-батькові")
+      personal_class = forms.ChoiceField(label='Клас учнів', required=True)
 
-#       login = forms.CharField(max_length=20, required=True, label='Логін', widget=forms.TextInput(attrs={'class': 'username'}))
-#       password = forms.CharField(max_length=20, required=True, label='Пароль', widget=forms.PasswordInput(attrs={'class': 'password'}))
+      login = forms.CharField(max_length=20, required=True, label='Логін', widget=forms.TextInput(attrs={'class': 'username'}))
+      password = forms.CharField(max_length=20, required=True, label='Пароль', widget=forms.PasswordInput(attrs={'class': 'password'}))
+
+      discipline = forms.ChoiceField(label='Дисципліна', required=True)
+
+      photo = forms.ImageField()

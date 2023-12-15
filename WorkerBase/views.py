@@ -75,8 +75,8 @@ def showClassPage(request, class_id):
                  FROM Students INNER JOIN [Students in class]
                   ON Students.student_id = [Students in class].fk_student_id INNER JOIN Classes 
                   ON [Students in class].fk_class_id = Classes.class_id
-                 WHERE Students.fk_teacher_id = %s AND Classes.class_id = %s
-                 """, [request.session['worker_id'], class_id])
+                 WHERE Classes.class_id = %s
+                 """, [class_id,])
   class_students = cursor.fetchall()
   return render(request, 'ClassPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
@@ -649,7 +649,7 @@ def showCoordPage(request):
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo']})                                            
 
-def showTeachersPage(request):
+def showTeachersListPage(request):
   cursor = connection.cursor()
   cursor.execute("""
                  SELECT last_name, first_name, patronymic, worker_id
@@ -674,4 +674,26 @@ def showClassesPage(request):
                                                'w_first_name': request.session['first_name'], 
                                                'w_role': request.session['role'],
                                                'w_photo': request.session['photo'],
-                                               'classes': classes})                   
+                                               'classes': classes})
+
+def addTeacher(request):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = CreateTeacherForm(request.POST)
+    if form.is_valid():
+      print(request.POST)
+      
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = CreateTeacherForm()
+    
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'PersonFormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})                     
