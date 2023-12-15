@@ -744,4 +744,27 @@ def addTeacher(request):
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
-                                            'form': form})                        
+                                            'form': form})
+
+def addStudent(request):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = CreateStudentForm(request.POST, request.FILES)
+    if form.is_valid():
+      print(request.POST)
+      photo = request.FILES['photo']
+      filepath = Rename.rename('student', photo.name)
+      default_storage.save(filepath, photo)
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = CreateStudentForm()
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'PersonFormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})                           

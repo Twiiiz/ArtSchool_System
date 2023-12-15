@@ -27,5 +27,6 @@ urlpatterns = [
     path('coord_page/', showCoordPage),
     path('coord_page/view_teachers/', showTeachersListPage),
     path('coord_page/view_teachers/add_teacher/', addTeacher, name='add-teacher'),
+    path('coord_page/add_student/', addStudent, name='add-student'),
     path('coord_page/view_classes/', showClassesPage),
 ]

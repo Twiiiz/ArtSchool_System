@@ -4,12 +4,6 @@ class LoginForm(forms.Form):
    login = forms.CharField(max_length=20, required=True, label='Логін', widget=forms.TextInput(attrs={'class': 'username'}))
    password = forms.CharField(max_length=20, required=True, label='Пароль', widget=forms.PasswordInput(attrs={'class': 'password'}))
 
-# class StudentForm(forms.Form):
-#    first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
-#    last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
-#    patronymic = forms.CharField(max_length=50, label="По-батькові")
-#    date_of_birth = forms.DateField(label='Дата народження')
-
 class StudentGradeForm(forms.Form):
    student = forms.ChoiceField(label='Учень', required=True)
    grade = forms.IntegerField(min_value=1, max_value=5, required=True, label='Оцінка')
@@ -76,3 +70,10 @@ class CreateTeacherForm(forms.Form):
       discipline = forms.ChoiceField(label='Дисципліна', required=True)
 
       photo = forms.ImageField(label='Фотографія')
+
+class CreateStudentForm(forms.Form):
+   first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
+   last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
+   patronymic = forms.CharField(max_length=50, label="По-батькові")
+   date_of_birth = forms.DateField(label='Дата народження', widget=forms.DateInput(attrs={'type': 'date'}))
+   photo = forms.ImageField(label='Фотографія')
