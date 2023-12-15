@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
-  background-color: lightblue;
+  background-color: rgb(90, 153, 173);
   padding-top: 10%;
   height: 100%;
   width: 100%;
@@ -25,7 +25,7 @@ h1 {
 
 form {
   background-color: rgb(30, 197, 161);
-  border: 3px solid rgb(26, 173, 142);
+  border: 3px solid rgb(24, 148, 121);
   border-radius: 15px;
   font-size: 30px;
   padding: 5px;

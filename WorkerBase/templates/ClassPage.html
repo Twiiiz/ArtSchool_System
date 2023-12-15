@@ -12,7 +12,7 @@
     <table>
       <thead>
         <tr>
-          <th>ПІБ</th>
+          <th>Учень/учениця</th>
           <th>Дія</th>
         </tr>
       </thead>
@@ -25,7 +25,7 @@
         {% endfor %}
       </tbody>
     </table>
-    <a href="{% url 'show-dates-form-students' class_id=class_id %}?redirect_to={{ 'stats' }}" class='schedule'>Переглянути оцінки та відвідуваність учнів класу</a>
-    <a href="{% url 'show-dates-form-students' class_id=class_id %}?redirect_to={{ 'comp' }}">Переглянути здобуті учнями класу компетентності</a>
+    <a href="{% url 'show-dates-form-students' class_id=class_id %}?redirect_to={{ 'stats' }}" class='stats'>Переглянути оцінки та відвідуваність учнів класу</a>
+    <a href="{% url 'show-dates-form-students' class_id=class_id %}?redirect_to={{ 'comp' }}" class='comp'>Переглянути здобуті учнями класу компетентності</a>
   </div>
 {% endblock %}

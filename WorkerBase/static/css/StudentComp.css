@@ -5,6 +5,8 @@
   margin-top: 8vh;
   color: white;
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 table {
@@ -28,10 +30,20 @@ h1 {
 a {
   text-decoration: none;
   color: inherit;
+  margin-left: auto;
+  margin-right: auto;
+
+  height: 4%;
+  width: 30%;
+  margin-bottom: 2%;
 }
 
-.add_record {
+.add_record, .go_back {
   font-size: 30px;
   border: solid 3px white;
   padding: 2vh;
+}
+
+.go_back {
+  margin-bottom: 0;
 }

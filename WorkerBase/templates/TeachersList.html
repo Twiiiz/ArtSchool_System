@@ -17,14 +17,20 @@
         <th>Прізвище</th>
         <th>Ім'я</th>
         <th>По-батькові</th>
+        <th>Дисципліни</th>
       </tr>
     </thead>
     <tbody>
-      {% for teacher in teachers %}
+      {% for teacher, disciplines in disciplines_dict.items %}
         <tr>
           <td>{{ teacher.0 }}</td>
           <td>{{ teacher.1 }}</td>
           <td>{{ teacher.2 }}</td>
+          <td>
+            {% for discipline in disciplines %}
+            {{ discipline.0 }},<br>
+            {% endfor %}
+          </td>
         </tr>
       {% endfor %}
     </tbody>

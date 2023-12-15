@@ -3,13 +3,13 @@
 {% block title %}Дані обраного учня{% endblock title %}
 {% block styles %}
   {{ block.super }}
-  
+  <link rel="stylesheet" href="{% static 'css/StudentPage.css' %}">
 {% endblock styles %}
 {% block content %}
   {{ block.super }}
   <div class='student_content'>
     <h1>Особиста сторінка</h1>
-    <img src="{% static student_data.6 %}">
+    <img src="{% static student_data.5 %}">
     <div class='student'>
       <table class='student_table'>
         <thead>

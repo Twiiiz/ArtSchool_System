@@ -1,0 +1,50 @@
+.student_content {
+  height: 100%;
+  width: 100%;
+  margin-top: 8vh;
+  background-color: rgb(90, 153, 173);
+  text-align: center;
+  color: white;
+}
+
+img {
+  margin-bottom: 3%;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  color: black;
+  background-color: white;
+  border-collapse: collapse;
+  font-size: 20px;
+}
+
+th, td {
+  border: 1px solid black;
+  text-align: center;
+}
+
+.student, .main_teacher {
+  height: 10%;
+  width: 30%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.student {
+  margin-bottom: 8%;
+}
+
+.student_table, .main_teacher_table {
+  height: 100%;
+  width: 100%;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 28px;
+}

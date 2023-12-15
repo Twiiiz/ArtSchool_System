@@ -1,0 +1,13 @@
+.content {
+  height: 100%;
+  width: 100%;
+  margin-top: 8vh;
+  color: white;
+  background-color: rgb(90, 153, 173);
+  text-align: center;
+  font-size: 25px;
+}
+
+.submit_button {
+  font-size: 20px;
+}

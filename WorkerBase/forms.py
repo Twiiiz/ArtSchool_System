@@ -26,8 +26,7 @@ class StudentGradeForm(forms.Form):
 class StudentAttendanceForm(forms.Form):
    student = forms.ChoiceField(label='Учень', required=True)
    lesson = forms.ChoiceField(label='Проведене Заняття', required=True)
-   attendance = forms.TypedChoiceField(choices=[('', '--- Статус ---'),
-                                                ('відвідано', 'відвідано'),
+   attendance = forms.TypedChoiceField(choices=[('відвідано', 'відвідано'),
                                                 ('пропущено', 'пропущено')], coerce=str, required=True, label='Статус')
    
    def __init__(self, *args, **kwargs):
@@ -76,4 +75,4 @@ class CreateTeacherForm(forms.Form):
 
       discipline = forms.ChoiceField(label='Дисципліна', required=True)
 
-      photo = forms.ImageField()
+      photo = forms.ImageField(label='Фотографія')

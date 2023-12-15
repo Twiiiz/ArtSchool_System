@@ -1,0 +1,38 @@
+.content {
+  height: 100%;
+  width: 100%;
+  margin-top: 8vh;
+  background-color: rgb(90, 153, 173);
+  color: white;
+  text-align: center;
+}
+
+.form_container {
+  margin-left: auto;
+  margin-right: auto;
+  height: 30%;
+  width: 60%;
+  text-align: left;
+  font-size: 20px;
+}
+
+input, select {
+  font-size: 20px;
+  margin-bottom: 3%;
+}
+
+label {
+  padding-left: 35%;
+}
+
+.submit_button {
+  display: block;
+  margin: auto;
+  margin-bottom: 0;
+  padding: 0.5%;
+  font-size: 23px;
+}
+
+h1 {
+  margin-bottom: 3%;
+}
