@@ -1,0 +1,35 @@
+{% extends "WorkerPage.html" %}
+{% load static %}
+{% block title %}
+  Перегляд класу
+{% endblock %}
+{% block styles %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/CoordClass.css' %}">
+{% endblock %}
+{% block content %}
+ {{ block.super }}
+ <div class='content'>
+  <h1>Учні класу</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Учень/учениця</th>
+          <th colspan='2'>Дії</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in class_students %}
+          <tr>
+            <td>{{ student.1 }} {{ student.2 }}</td>
+            <td>
+              <button>sfd</button>
+            </td>
+            <td><button>gfgf</button></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a href="{% url 'add-student-to-class' class_id=class_id %}">Додати нового учня/ученицю до класу</a>
+ </div>
+{% endblock %}

@@ -24,9 +24,11 @@ urlpatterns = [
       path('student_comp/add_comp/', handleStudentComp, name='handle-comp')
       ])),
     ])),
-    path('coord_page/', showCoordPage),
+    path('coord_page/', showCoordPage, name='show-coord-page'),
     path('coord_page/view_teachers/', showTeachersListPage),
     path('coord_page/view_teachers/add_teacher/', addTeacher, name='add-teacher'),
     path('coord_page/add_student/', addStudent, name='add-student'),
     path('coord_page/view_classes/', showClassesPage),
+    path('coord_page/view_classes/class/<int:class_id>/', showClassPage, name='show-coord-class-page'),
+    path('coord_page/view_classes/class/<int:class_id>/add_student', addStudentToClass, name='add-student-to-class'),
 ]

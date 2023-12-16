@@ -1,0 +1,38 @@
+.content {
+  height: 100%;
+  width: 100%;
+  margin-top: 8vh;
+  text-align: center;
+  background-color: rgb(90, 153, 173);
+  color: white;
+}
+
+.content h1 {
+  font-size: 40px;
+}
+
+#profile {
+  margin-right: 3%;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  color: black;
+  background-color: white;
+  font-size: 19px;
+  margin-bottom: 20%;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+.content a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 28px;
+  border: 3.5px solid white;
+  padding: 1%;
+}

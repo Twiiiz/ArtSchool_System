@@ -27,7 +27,10 @@ h1 {
   margin-bottom: 5vh;
 }
 
-a {
+.add_record, .go_back {
+  font-size: 30px;
+  border: solid 3px white;
+  padding: 2vh;
   text-decoration: none;
   color: inherit;
   margin-left: auto;
@@ -38,12 +41,11 @@ a {
   margin-bottom: 2%;
 }
 
-.add_record, .go_back {
-  font-size: 30px;
-  border: solid 3px white;
-  padding: 2vh;
-}
-
 .go_back {
   margin-bottom: 0;
+}
+
+.exit {
+  margin-top: auto;
+  margin-bottom: auto;
 }

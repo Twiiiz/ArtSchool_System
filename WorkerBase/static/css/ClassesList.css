@@ -1,0 +1,29 @@
+.content {
+  height: 100%;
+  width: 100%;
+  margin-top: 8vh;
+  text-align: center;
+  background-color: rgb(90, 153, 173);
+  color: white;
+}
+
+.content h2 {
+  font-size: 40px;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  color: black;
+  background-color: white;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+#profile {
+  margin-right: 3%;
+}

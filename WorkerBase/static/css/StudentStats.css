@@ -95,3 +95,7 @@ a {
 #h2_grades, #h2_attends, #h2_chart {
   color: white;
 }
+
+.exit {
+  border: none;
+}

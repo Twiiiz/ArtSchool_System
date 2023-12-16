@@ -52,7 +52,7 @@ body {
 }
 
 #role {
-  margin-right: auto;
+  margin-right: 70%;
 }
 
 #profile {
@@ -60,11 +60,17 @@ body {
   width: 10%;
 }
 
-
-
 .photo {
   margin-right: 1%;
   height: 65%;
   width: 8vh;
   border-radius: 40%;
+}
+
+.exit {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-decoration: none;
+  color: inherit;
+  font-size: 32px;
 }

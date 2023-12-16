@@ -5,6 +5,7 @@
 {% endblock %}
 {% block styles %}
   {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/ClassesList.css' %}">
 {% endblock %}
 {% block content %}
  {{ block.super }}
@@ -15,6 +16,7 @@
       <tr>
         <th>Назви</th>
         <th>Спеціалізація</th>
+        <th>Дії</th>
       </tr>
     </thead>
     <tbody>
@@ -22,6 +24,7 @@
         <tr>
           <td>{{ class.0 }}</td>
           <td>{{ class.1 }}</td>
+          <td><button onclick="location.href='{% url 'show-coord-class-page' class.2 %}'">Перегляд</button></td>
         </tr>
       {% endfor %}
     </tbody>

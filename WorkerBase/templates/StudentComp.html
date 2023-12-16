@@ -1,7 +1,7 @@
 {% extends "WorkerPage.html" %}
 {% load static %}
 {% block title %}
-  Здобуті учнями компетентності
+  Здобуті учнями компетенції
 {% endblock %}
 {% block styles %}
   {{ block.super }}
@@ -10,7 +10,7 @@
 {% block content %}
  {{ block.super }}
  <div class='content'>
-  <h1>Компетентності учнів класу '{{ class_name }}'</h1>
+  <h1>Компетенції учнів класу '{{ class_name }}'</h1>
   <table class='comp_table'>
     <thead>
       <tr>
@@ -39,7 +39,7 @@
       {% endfor %}
     </tbody>
   </table>
-  <a href="{% url 'handle-comp' class_id=id_class %}?action_type={{ 'insert' }}" class='add_record'>Зареєструвати компетентність учня</a>
+  <a href="{% url 'handle-comp' class_id=id_class %}?action_type={{ 'insert' }}" class='add_record'>Зареєструвати компетенцію учня</a>
   <a href="{% url 'show-teacher-page' %}" class='go_back'>Повернутись до своєї сторінки</a>
  </div>
 {% endblock %}

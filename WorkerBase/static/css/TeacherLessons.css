@@ -76,3 +76,7 @@ a {
 #add_lesson {
   margin-right: 2%;
 }
+
+.exit {
+  border: none;
+}

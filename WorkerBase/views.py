@@ -81,12 +81,21 @@ def showClassPage(request, class_id):
                  WHERE Classes.class_id = %s
                  """, [class_id,])
   class_students = cursor.fetchall()
-  return render(request, 'ClassPage.html', {'w_last_name': request.session['last_name'],
+  if request.session['role'] == 'Вчитель':
+    response = render(request, 'ClassPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
                                             'class_students': class_students,
                                             'class_id': class_id})
+  elif request.session['role'] == 'Координатор':
+    response = render(request, 'CoordClassPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'class_students': class_students,
+                                            'class_id': class_id})
+  return response
 
 def showStudentPage(request, class_id, student_id):
   cursor = connection.cursor()
@@ -593,7 +602,7 @@ def handleStudentComp(request, class_id):
                                                        WHERE fk_teacher_id = %s)
                    """, (request.session['worker_id'],))
     skills = cursor.fetchall()
-    form.fields['skill'].choices = [(skill[0], f'Дисципліна: {skill[1]}, Компетенція: {skill[2]}') for skill in skills]
+    form.fields['skill'].choices = [(skill[0], f'Компетенція: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
@@ -629,7 +638,7 @@ def handleStudentComp(request, class_id):
                                                        WHERE fk_teacher_id = %s)
                    """, (request.session['worker_id'],))
     skills = cursor.fetchall()
-    form.fields['skill'].choices = [(skill[0], f'Дисципліна: {skill[1]}, Компетенція: {skill[2]}') for skill in skills]
+    form.fields['skill'].choices = [(skill[0], f'Компетенція: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
@@ -689,7 +698,7 @@ def showTeachersListPage(request):
 def showClassesPage(request):
   cursor = connection.cursor()
   cursor.execute("""
-                 SELECT Classes.[name], Specialisations.[name]
+                 SELECT Classes.[name], Specialisations.[name], Classes.class_id
                  FROM Specialisations INNER JOIN Classes ON Specialisations.spec_id = Classes.fk_spec_id
                  """)
   classes = cursor.fetchall()
@@ -720,6 +729,8 @@ def addTeacher(request):
       photo = request.FILES['photo']
       filepath = Rename.rename('teacher', photo.name)
       default_storage.save(filepath, photo)
+      response = redirect('show-coord-page')
+      return response
     else:
       print('NOT VALID')
       print(request.POST)
@@ -755,6 +766,8 @@ def addStudent(request):
       photo = request.FILES['photo']
       filepath = Rename.rename('student', photo.name)
       default_storage.save(filepath, photo)
+      response = redirect('show-coord-page')
+      return response
     else:
       print('NOT VALID')
       print(request.POST)
@@ -767,4 +780,36 @@ def addStudent(request):
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
-                                            'form': form})                           
+                                            'form': form})
+
+def addStudentToClass(request, class_id):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT student_id, last_name, first_name, patronymic
+                 FROM Students INNER JOIN [Students in class]
+                      ON Students.student_id = [Students in class].fk_student_id
+                 WHERE student_id NOT IN (SELECT fk_student_id
+                                          FROM [Students in class]
+                                          WHERE fk_class_id = %s)
+                 """, (class_id,))
+  new_students = cursor.fetchall()
+  if request.method=='POST':
+    form = AddStudentToClassForm(request.POST)
+    form.fields['student'].choices = [(student[0], f'{student[1]} {student[2]} {student[3]}') for student in new_students]
+    if form.is_valid():
+      print(request.POST)
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = AddStudentToClassForm()
+    form.fields['student'].choices = [(student[0], f'{student[1]} {student[2]} {student[3]}') for student in new_students]
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'PersonFormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})
+# def showCoordClassPage(request, class_id):

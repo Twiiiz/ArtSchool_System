@@ -77,3 +77,6 @@ class CreateStudentForm(forms.Form):
    patronymic = forms.CharField(max_length=50, label="По-батькові")
    date_of_birth = forms.DateField(label='Дата народження', widget=forms.DateInput(attrs={'type': 'date'}))
    photo = forms.ImageField(label='Фотографія')
+
+class AddStudentToClassForm(forms.Form):
+    student = forms.ChoiceField(label='Учень без класу', required=True)
