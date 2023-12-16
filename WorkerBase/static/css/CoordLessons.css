@@ -1,0 +1,59 @@
+.content {
+  height: 100%;
+  width: 100%;
+  margin-top: 8vh;
+  text-align: center;
+  background-color: rgb(90, 153, 173);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson_tables {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.lessons_planned, .lessons_done {
+  height: 100%;
+  width: 50%;
+  text-align: center;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  color: black;
+  background-color: white;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+#profile {
+  margin-right: 3%;
+}
+
+.lessons_action {
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  gap: 2%;
+}
+
+.lessons_action a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 25px;
+  border: 3.5px solid white;
+  height: 30%;
+  padding: 1%;
+  padding-bottom: 0;
+  text-align: center;
+}

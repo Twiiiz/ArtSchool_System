@@ -833,3 +833,111 @@ def showCoordTeacherPage(request, teacher_id):
                                             'w_photo': request.session['photo'],
                                             'teacher_data': teacher,
                                             'teacher_classes_data': teacher_classes})
+
+def showDatesFormCoord(request):
+  if 'from_date' in request.session and 'to_date' in request.session:
+    del request.session['from_date']
+    del request.session['to_date']
+  if request.method=='POST':
+    form = DatesForm(request.POST)
+    print('GOT THE FORM')
+    if form.is_valid():
+      from_date = form.cleaned_data.get('from_date')
+      to_date = form.cleaned_data.get('to_date')
+      request.session['from_date'] = from_date.strftime('%Y-%m-%d')
+      request.session['to_date'] = to_date.strftime('%Y-%m-%d')
+      response = redirect('show-coord-lessons')
+      return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    form = DatesForm()
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'DatesForm.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})
+
+def showCoordLessons(request):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT Lessons.lesson_id, Disciplines.[name], Classes.[name], Workers.last_name, Workers.first_name,
+                 Lessons.[date], Lessons.start_time, Lessons.end_time
+                 FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
+                 ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id INNER JOIN Workers
+                 ON Lessons.fk_teacher_id = Workers.worker_id
+                 WHERE fk_status_id = 1 AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (request.session['from_date'], request.session['to_date']))
+  planned_lessons = cursor.fetchall()
+  cursor.execute("""
+                 SELECT Lessons.lesson_id, Disciplines.[name], Classes.[name], Workers.last_name, Workers.first_name,
+                 Lessons.[date], Lessons.start_time, Lessons.end_time
+                 FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
+                 ON fk_class_id = class_id INNER JOIN [Lesson statuses] ON fk_status_id = status_id INNER JOIN Workers
+                 ON Lessons.fk_teacher_id = Workers.worker_id
+                 WHERE fk_status_id = 2 AND Lessons.[date] >= %s AND Lessons.[date] <= %s
+                 """, (request.session['from_date'], request.session['to_date']))
+  done_lessons = cursor.fetchall()
+  return render(request, 'CoordLessons.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'planned_lessons': planned_lessons,
+                                            'done_lessons': done_lessons})
+
+def addPlannedLesson(request):
+  cursor = connection.cursor()
+  form = AddPlannedLessonForm()
+  cursor.execute("""
+                 SELECT discipline_id, [name]
+                 FROM DISCIPLINES
+                 """)
+  disciplines = cursor.fetchall()
+  form.fields['discipline'].choices = [(discipline[0], f'{discipline[1]}') for discipline in disciplines]
+  cursor.execute("""
+                 SELECT class_id, Classes.[name], Specialisations.[name]
+                 FROM Classes INNER JOIN Specialisations ON fk_spec_id = spec_id
+                 """)
+  classes = cursor.fetchall()
+  form.fields['student_class'].choices = [(student_class[0], f'Назва: {student_class[1]}, Спеціалізація: {student_class[2]}') for student_class in classes]
+  cursor.execute("""
+                 SELECT worker_id, last_name, first_name, patronymic
+                 FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                 Where [Worker roles].[name] = N'Вчитель'
+                 """)
+  teachers = cursor.fetchall()
+  form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
+  if request.method=='POST':
+    form = AddPlannedLessonForm(request.POST)
+    print('GOT THE FORM')
+    if form.is_valid():
+      discipline = form.cleaned_data.get('discipline')
+      student_class = form.cleaned_data.get('student_class')
+      teacher = form.cleaned_data.get('teacher')
+      date = form.cleaned_data.get('date')
+      date = date.strftime('%Y-%m-%d')
+      start_time = form.cleaned_data.get('start_time')
+      start_time = start_time.strftime('%H:%M')
+      end_time = form.cleaned_data.get('end_time')
+      end_time = end_time.strftime('%H:%M')
+      # cursor.execute("""
+                     
+      #                """)
+      response = redirect('show-coord-lessons')
+      return response
+    else:
+      print('NOT VALID')
+      print(request.POST)
+  else:
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})

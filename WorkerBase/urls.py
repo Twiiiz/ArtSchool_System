@@ -33,4 +33,7 @@ urlpatterns = [
     path('coord_page/view_classes/class/<int:class_id>/', showClassPage, name='show-coord-class-page'),
     path('coord_page/view_classes/class/<int:class_id>/<int:student_id>', showStudentPage, name='show-coord-student-page'),
     path('coord_page/view_classes/class/<int:class_id>/add_student', addStudentToClass, name='add-student-to-class'),
+    path('coord_page/fill_dates/', showDatesFormCoord),
+    path('coord_page/fill_dates/view_lessons/', showCoordLessons, name='show-coord-lessons'),
+    path('coord_page/fill_dates/view_lessons/add_lesson/', addPlannedLesson, name='add-coord-lessons')
 ]
