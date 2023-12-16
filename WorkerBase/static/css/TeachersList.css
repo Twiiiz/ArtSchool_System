@@ -24,7 +24,7 @@ h1 {
   font-size: 45px;
 }
 
-a {
+.content a {
   text-decoration: none;
   color: inherit;
   font-size: 24px;
@@ -33,4 +33,8 @@ a {
   width: 35%;
   border: 3.5px solid white;
   padding: 2vh;
+}
+
+#profile {
+  margin-right: 3%;
 }

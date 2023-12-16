@@ -18,6 +18,7 @@
         <th>Ім'я</th>
         <th>По-батькові</th>
         <th>Дисципліни</th>
+        <th>Дії</th>
       </tr>
     </thead>
     <tbody>
@@ -31,6 +32,7 @@
             {{ discipline.0 }},<br>
             {% endfor %}
           </td>
+          <td><button onclick="location.href='{% url 'show-coord-teacher-page' teacher_id=teacher.3 %}'">Переглянути</button></td>
         </tr>
       {% endfor %}
     </tbody>

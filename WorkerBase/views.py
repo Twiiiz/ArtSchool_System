@@ -812,4 +812,24 @@ def addStudentToClass(request, class_id):
                                             'w_role': request.session['role'],
                                             'w_photo': request.session['photo'],
                                             'form': form})
-# def showCoordClassPage(request, class_id):
+
+def showCoordTeacherPage(request, teacher_id):
+  cursor = connection.cursor()
+  cursor.execute("""
+                 SELECT last_name, first_name, patronymic, photo_path
+                 FROM Workers
+                 WHERE worker_id = %s
+                 """, (teacher_id,))
+  teacher = cursor.fetchone()
+  cursor.execute("""
+                 SELECT Classes.[name], Specialisations.[name] 
+                 FROM Classes INNER JOIN Specialisations
+                      ON fk_spec_id = spec_id
+                 """)
+  teacher_classes = cursor.fetchall()
+  return render(request, 'CoordTeacherPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'teacher_data': teacher,
+                                            'teacher_classes_data': teacher_classes})
