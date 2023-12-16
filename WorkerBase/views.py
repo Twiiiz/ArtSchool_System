@@ -891,28 +891,27 @@ def showCoordLessons(request):
 
 def addPlannedLesson(request):
   cursor = connection.cursor()
-  form = AddPlannedLessonForm()
-  cursor.execute("""
-                 SELECT discipline_id, [name]
-                 FROM DISCIPLINES
-                 """)
-  disciplines = cursor.fetchall()
-  form.fields['discipline'].choices = [(discipline[0], f'{discipline[1]}') for discipline in disciplines]
-  cursor.execute("""
-                 SELECT class_id, Classes.[name], Specialisations.[name]
-                 FROM Classes INNER JOIN Specialisations ON fk_spec_id = spec_id
-                 """)
-  classes = cursor.fetchall()
-  form.fields['student_class'].choices = [(student_class[0], f'Назва: {student_class[1]}, Спеціалізація: {student_class[2]}') for student_class in classes]
-  cursor.execute("""
-                 SELECT worker_id, last_name, first_name, patronymic
-                 FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
-                 Where [Worker roles].[name] = N'Вчитель'
-                 """)
-  teachers = cursor.fetchall()
-  form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
   if request.method=='POST':
     form = AddPlannedLessonForm(request.POST)
+    cursor.execute("""
+                  SELECT discipline_id, [name]
+                  FROM DISCIPLINES
+                  """)
+    disciplines = cursor.fetchall()
+    form.fields['discipline'].choices = [(discipline[0], f'{discipline[1]}') for discipline in disciplines]
+    cursor.execute("""
+                  SELECT class_id, Classes.[name], Specialisations.[name]
+                  FROM Classes INNER JOIN Specialisations ON fk_spec_id = spec_id
+                  """)
+    classes = cursor.fetchall()
+    form.fields['student_class'].choices = [(student_class[0], f'Назва: {student_class[1]}, Спеціалізація: {student_class[2]}') for student_class in classes]
+    cursor.execute("""
+                  SELECT worker_id, last_name, first_name, patronymic
+                  FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                  Where [Worker roles].[name] = N'Вчитель'
+                  """)
+    teachers = cursor.fetchall()
+    form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
     print('GOT THE FORM')
     if form.is_valid():
       discipline = form.cleaned_data.get('discipline')
@@ -927,12 +926,33 @@ def addPlannedLesson(request):
       # cursor.execute("""
                      
       #                """)
+      print([discipline, student_class, teacher, date, start_time, end_time])
       response = redirect('show-coord-lessons')
       return response
     else:
       print('NOT VALID')
       print(request.POST)
   else:
+    form = AddPlannedLessonForm()
+    cursor.execute("""
+                  SELECT discipline_id, [name]
+                  FROM DISCIPLINES
+                  """)
+    disciplines = cursor.fetchall()
+    form.fields['discipline'].choices = [(discipline[0], f'{discipline[1]}') for discipline in disciplines]
+    cursor.execute("""
+                  SELECT class_id, Classes.[name], Specialisations.[name]
+                  FROM Classes INNER JOIN Specialisations ON fk_spec_id = spec_id
+                  """)
+    classes = cursor.fetchall()
+    form.fields['student_class'].choices = [(student_class[0], f'Назва: {student_class[1]}, Спеціалізація: {student_class[2]}') for student_class in classes]
+    cursor.execute("""
+                  SELECT worker_id, last_name, first_name, patronymic
+                  FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                  Where [Worker roles].[name] = N'Вчитель'
+                  """)
+    teachers = cursor.fetchall()
+    form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
     system_messages = messages.get_messages(request)
     for message in system_messages:
       pass
