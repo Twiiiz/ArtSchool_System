@@ -68,8 +68,6 @@ def showTeacherPage(request):
                                               'classes': classes})
 
 def showClassPage(request, class_id):
-  # if not request.COOKIES.get('logged_in') or request.session['role'] != 'Вчитель' or request.session['role'] != 'Координатор':
-  #    raise Http404
   cursor = connection.cursor()
   cursor.execute("""
                  SELECT student_id, last_name, first_name
@@ -125,8 +123,6 @@ def showTeacherLessonsPage(request):
                  WHERE Lessons.fk_teacher_id = %s AND fk_status_id = 2 AND Lessons.[date] >= %s AND Lessons.[date] <= %s
                  """, (request.session['worker_id'], request.session['from_date'], request.session['to_date']))
   lessons_done = cursor.fetchall()
-  # biggest_date = max(lessons_done, key=lambda t: t[2])[2]
-  # biggest_start_time = max(lessons_done, key=lambda t: t[3])[3]
   cursor.execute("""
                  SELECT Disciplines.[name], Classes.[name], Lessons.[date], Lessons.start_time, Lessons.end_time
                  FROM Disciplines INNER JOIN Lessons ON discipline_id = fk_discipline_id INNER JOIN Classes
@@ -241,7 +237,6 @@ def addStudentGrade(request, class_id):
                    """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [(lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_student_id = form.cleaned_data.get('student')
       grade = form.cleaned_data.get('grade')
@@ -383,7 +378,6 @@ def addStudentAttendance(request, class_id):
                    """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [(lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_student_id = form.cleaned_data.get('student')
       fk_lesson_id = form.cleaned_data.get('lesson')
@@ -444,7 +438,6 @@ def editStudentAttendance(request, class_id, attend_id, student_id, lesson_id):
                    """, (request.session['worker_id'], class_id, request.session['from_date'], request.session['to_date']))
     lessons = cursor.fetchall()
     form.fields['lesson'].choices = [(lesson[0], f'Дисципліна: {lesson[1]}, Дата: {lesson[2]}, Час початку: {lesson[3]}, Час кінця: {lesson[4]}') for lesson in lessons]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_student_id = form.cleaned_data.get('student')
       fk_lesson_id = form.cleaned_data.get('lesson')
@@ -491,7 +484,6 @@ def showDatesFormStudent(request, class_id):
     del request.session['to_date']
   if request.method=='POST':
     form = DatesForm(request.POST)
-    print('GOT THE FORM')
     if form.is_valid():
       from_date = form.cleaned_data.get('from_date')
       to_date = form.cleaned_data.get('to_date')
@@ -504,9 +496,6 @@ def showDatesFormStudent(request, class_id):
         elif request.GET.get('redirect_to') == 'comp':
           response = redirect(reverse('show-teacher-student-comp-page', kwargs={'class_id':class_id}))
           return response
-    else:
-      print('NOT VALID')
-      print(request.POST)
   else:
     form = DatesForm()
     system_messages = messages.get_messages(request)
@@ -525,7 +514,6 @@ def showDatesFormLessons(request):
 
   if request.method=='POST':
     form = DatesForm(request.POST)
-    print('GOT THE FORM')
     if form.is_valid():
       from_date = form.cleaned_data.get('from_date')
       to_date = form.cleaned_data.get('to_date')
@@ -533,9 +521,6 @@ def showDatesFormLessons(request):
       request.session['to_date'] = to_date.strftime('%Y-%m-%d')
       response = redirect('show-teacher-lesson-page')
       return response
-    else:
-      print('NOT VALID')
-      print(request.POST)
   else:
     form = DatesForm()
     system_messages = messages.get_messages(request)
@@ -562,7 +547,6 @@ def addTeacherLessonDone(request):
                    """, (request.session['worker_id'],))
     classes_students = cursor.fetchall()
     form.fields['class_students'].choices = [(class_students[0], f'Назва: {class_students[1]}, Спеціалізація: {class_students[2]}') for class_students in classes_students]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_discipline_id = form.cleaned_data.get('discipline')
       fk_class_id = form.cleaned_data.get('class_students')
@@ -615,7 +599,6 @@ def editTeacherLessonDone(request, lesson_id):
                    """, (request.session['worker_id'],))
     classes_students = cursor.fetchall()
     form.fields['class_students'].choices = [(class_students[0], f'Назва: {class_students[1]}, Спеціалізація: {class_students[2]}') for class_students in classes_students]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_discipline_id = form.cleaned_data.get('discipline')
       fk_class_id = form.cleaned_data.get('class_students')
@@ -1028,7 +1011,6 @@ def showDatesFormCoord(request):
     del request.session['to_date']
   if request.method=='POST':
     form = DatesForm(request.POST)
-    print('GOT THE FORM')
     if form.is_valid():
       from_date = form.cleaned_data.get('from_date')
       to_date = form.cleaned_data.get('to_date')
@@ -1036,9 +1018,6 @@ def showDatesFormCoord(request):
       request.session['to_date'] = to_date.strftime('%Y-%m-%d')
       response = redirect('show-coord-lessons')
       return response
-    else:
-      print('NOT VALID')
-      print(request.POST)
   else:
     form = DatesForm()
     system_messages = messages.get_messages(request)
@@ -1100,7 +1079,6 @@ def addPlannedLesson(request):
                   """)
     teachers = cursor.fetchall()
     form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_discipline_id = form.cleaned_data.get('discipline')
       fk_class_id = form.cleaned_data.get('student_class')
@@ -1172,7 +1150,6 @@ def editCoordLesson(request, lesson_id):
                   """)
     teachers = cursor.fetchall()
     form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
-    print('GOT THE FORM')
     if form.is_valid():
       fk_discipline_id = form.cleaned_data.get('discipline')
       fk_class_id = form.cleaned_data.get('student_class')
@@ -1191,9 +1168,6 @@ def editCoordLesson(request, lesson_id):
       if cursor.rowcount > 0:
         response = redirect('show-coord-lessons')
         return response
-    else:
-      print('NOT VALID')
-      print(request.POST)
   else:
     cursor.execute("""
                    SELECT [date], start_time, end_time
