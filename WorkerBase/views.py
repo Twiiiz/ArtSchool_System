@@ -808,7 +808,7 @@ def showTeachersListPage(request):
                   WHERE fk_teacher_id = %s
                   """, (teacher[-1],))
    disciplines = cursor.fetchall()
-  teacher_disciplines_dict[teacher] = disciplines
+   teacher_disciplines_dict[teacher] = disciplines
   return render(request, 'TeachersList.html', {'w_last_name': request.session['last_name'],
                                                'w_first_name': request.session['first_name'], 
                                                'w_role': request.session['role'],
@@ -839,7 +839,7 @@ def addTeacher(request):
                    WHERE fk_teacher_id IS NULL
                    """)
     classes = cursor.fetchall()
-    form.fields['personal_class'].choices = [(personal_class[0], f'{personal_class[1]}') for personal_class in classes]
+    form.fields['personal_class'].choices = [(100, 'Без класу')] + [(personal_class[0], f'{personal_class[1]}') for personal_class in classes]
     cursor.execute("""
                    SELECT *
                    FROM Disciplines
@@ -881,16 +881,20 @@ def addTeacher(request):
                          """, (teacher_id, login, password))
           if cursor.rowcount > 0:
             cursor.execute("""
-                           UPDATE [Classes]
-                           SET fk_teacher_id = %s
-                           WHERE class_id = %s
-                           """, (teacher_id, fk_class_id))
+                            INSERT INTO [Teacher disciplines](fk_teacher_id, fk_discipline_id) VALUES
+                            (%s, %s)
+                            """, (teacher_id, discipline))
             if cursor.rowcount > 0:
-              cursor.execute("""
-                             INSERT INTO [Teacher disciplines](fk_teacher_id, fk_discipline_id) VALUES
-                             (%s, %s)
-                             """, (teacher_id, discipline))
-              if cursor.rowcount > 0:
+              if fk_class_id != 100:
+                cursor.execute("""
+                              UPDATE [Classes]
+                              SET fk_teacher_id = %s
+                              WHERE class_id = %s
+                              """, (teacher_id, fk_class_id))
+                if cursor.rowcount > 0:
+                  response = redirect('show-coord-page')
+                  return response
+              else:
                 response = redirect('show-coord-page')
                 return response
   else:
@@ -901,7 +905,7 @@ def addTeacher(request):
                    WHERE fk_teacher_id IS NULL
                    """)
     classes = cursor.fetchall()
-    form.fields['personal_class'].choices = [(personal_class[0], f'{personal_class[1]}') for personal_class in classes]
+    form.fields['personal_class'].choices = [(100, 'Без класу')] + [(personal_class[0], f'{personal_class[1]}') for personal_class in classes]
     cursor.execute("""
                    SELECT *
                    FROM Disciplines
@@ -996,14 +1000,15 @@ def showCoordTeacherPage(request, teacher_id):
                  SELECT Classes.[name], Specialisations.[name] 
                  FROM Classes INNER JOIN Specialisations
                       ON fk_spec_id = spec_id
-                 """)
+                 WHERE fk_teacher_id = %s
+                 """, (teacher_id,))
   teacher_classes = cursor.fetchall()
   return render(request, 'CoordTeacherPage.html', {'w_last_name': request.session['last_name'],
-                                            'w_first_name': request.session['first_name'], 
-                                            'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
-                                            'teacher_data': teacher,
-                                            'teacher_classes_data': teacher_classes})
+                                                  'w_first_name': request.session['first_name'], 
+                                                  'w_role': request.session['role'],
+                                                  'w_photo': request.session['photo'],
+                                                  'teacher_data': teacher,
+                                                  'teacher_classes_data': teacher_classes})
 
 def showDatesFormCoord(request):
   if 'from_date' in request.session and 'to_date' in request.session:
