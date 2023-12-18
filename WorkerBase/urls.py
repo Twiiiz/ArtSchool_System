@@ -21,7 +21,8 @@ urlpatterns = [
         path('edit_attendance_<int:attend_id>_<int:student_id>_<int:lesson_id>/', editStudentAttendance, name='edit-student-attendance')
       ])),
       path('student_comp/', showStudentCompPage, name='show-teacher-student-comp-page'),
-      path('student_comp/add_comp/', handleStudentComp, name='handle-comp')
+      path('student_comp/add_comp/', addStudentComp, name='add-comp'),
+      path('student_comp/edit_comp/<int:comp_id>', editStudentComp, name='edit-comp')
       ])),
     ])),
     path('coord_page/', showCoordPage, name='show-coord-page'),
@@ -35,5 +36,6 @@ urlpatterns = [
     path('coord_page/view_classes/class/<int:class_id>/add_student', addStudentToClass, name='add-student-to-class'),
     path('coord_page/fill_dates/', showDatesFormCoord),
     path('coord_page/fill_dates/view_lessons/', showCoordLessons, name='show-coord-lessons'),
-    path('coord_page/fill_dates/view_lessons/add_lesson/', addPlannedLesson, name='add-coord-lessons')
+    path('coord_page/fill_dates/view_lessons/add_lesson/', addPlannedLesson, name='add-coord-lessons'),
+    path('coord_page/fill_dates/view_lessons/edit_<int:lesson_id>', editCoordLesson, name='edit-coord-lessons'),
 ]

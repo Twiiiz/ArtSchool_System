@@ -15,7 +15,7 @@
       <thead>
         <tr>
           <th>Учень/учениця</th>
-          <th colspan='2'>Дії</th>
+          <th>Дії</th>
         </tr>
       </thead>
       <tbody>
@@ -23,11 +23,11 @@
           <tr>
             <td>{{ student.1 }} {{ student.2 }}</td>
             <td><button onclick="location.href='{% url 'show-coord-student-page' class_id=class_id student_id=student.0 %}'">Перегляд</button></td>
-            <td><button>gfgf</button></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
     <a href="{% url 'add-student-to-class' class_id=class_id %}">Додати нового учня/ученицю до класу</a>
+    <a href="{% url 'show-coord-page' %}" id="back">Повернутись до своєї сторінки</a>
  </div>
 {% endblock %}

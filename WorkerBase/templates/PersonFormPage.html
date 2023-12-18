@@ -23,5 +23,16 @@
     <div class="alert alert-{{ message.tags }}">{{ message }}</div>
   {% endfor %}
   {% endif %}
+  {% if form.errors %}
+       <div class="errors">
+           {% for field, errors in form.errors.items %}
+               <ul>
+               {% for error in errors %}
+                  <li>{{ field }}: {{ error }}</li>
+               {% endfor %}
+               </ul>
+           {% endfor %}
+       </div>
+   {% endif %}
  </div>
 {% endblock %}

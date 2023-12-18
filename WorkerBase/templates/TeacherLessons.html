@@ -29,9 +29,9 @@
           <tr>
             <td>{{ lesson.0 }}</td>
             <td>{{ lesson.1 }}</td>
-            <td>{{ lesson.2 }}</td>
-            <td>{{ lesson.3 }}</td>
-            <td>{{ lesson.4 }}</td>
+            <td>{{ lesson.2|date:"d-m-Y" }}</td>
+            <td>{{ lesson.3|time:"H:i" }}</td>
+            <td>{{ lesson.4|time:"H:i" }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -55,9 +55,9 @@
           <tr>
             <td>{{ lesson.0 }}</td>
             <td>{{ lesson.1 }}</td>
-            <td>{{ lesson.2 }}</td>
-            <td>{{ lesson.3 }}</td>
-            <td>{{ lesson.4 }}</td>
+            <td>{{ lesson.2|date:"d-m-Y" }}</td>
+            <td>{{ lesson.3|time:"H:i" }}</td>
+            <td>{{ lesson.4|time:"H:i" }}</td>
             <td><button onclick="location.href='{% url 'edit-teacher-lesson-done' lesson_id=lesson.5 %}'">Редагувати</button></td>
           </tr>
           {% endfor %}
@@ -66,8 +66,8 @@
     </div>
   </div>
   <div class='lessons_action'>
-    <a href="{% url 'add-teacher-lesson-done' %}" id='add_lesson'>Зареєструвати проведене заняття</a>
     <a href="{% url 'show-teacher-page' %}">Повернутись до своєї сторінки</a>
+    <a href="{% url 'add-teacher-lesson-done' %}" id='add_lesson'>Зареєструвати проведене заняття</a>
   </div>
  </div>
 {% endblock %}

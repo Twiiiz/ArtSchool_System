@@ -17,4 +17,15 @@
     <input type="submit" value="Підтвердити" class='submit_button' />
   </form>
  </div>
+ {% if form.errors %}
+       <div class="errors">
+           {% for field, errors in form.errors.items %}
+               <ul>
+               {% for error in errors %}
+                  <li>{{ field }}: {{ error }}</li>
+               {% endfor %}
+               </ul>
+           {% endfor %}
+       </div>
+   {% endif %}
 {% endblock %}

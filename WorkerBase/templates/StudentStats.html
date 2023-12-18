@@ -37,8 +37,8 @@
               <td>{{ grade.2 }}</td>
               <td>{{ grade.3 }}</td>
               <td>{{ grade.4 }}</td>
-              <td>{{ grade.5 }}</td>
-              <td>{{ grade.6 }}</td>
+              <td>{{ grade.5|date:"d-m-Y" }}</td>
+              <td>{{ grade.6|time:"H:i" }}</td>
               <td>{{ grade.7 }}</td>
               <td><button onclick="location.href='{% url 'edit-student-grade' class_id=id_class grade_id=grade.10 student_id=grade.8 lesson_id=grade.9 %}'">Редагувати</button></td>
             </tr>
@@ -68,8 +68,8 @@
               <td>{{ attend.1 }}</td>
               <td>{{ attend.2 }}</td>
               <td>{{ attend.3 }}</td>
-              <td>{{ attend.4 }}</td>
-              <td>{{ attend.5 }}</td>
+              <td>{{ attend.4|date:"d-m-Y" }}</td>
+              <td>{{ attend.5|time:"H:i" }}</td>
               <td>{{ attend.6 }}</td>
               <td><button onclick="location.href='{% url 'edit-student-attendance' class_id=id_class attend_id=attend.9 student_id=attend.7 lesson_id=attend.8 %}'">
                 Редагувати

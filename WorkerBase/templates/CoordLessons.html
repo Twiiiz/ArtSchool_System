@@ -38,10 +38,10 @@
               <td>
                 {{ lesson.3 }} {{ lesson.4 }}
               </td>
-              <td>{{ lesson.5 }}</td>
-              <td>{{ lesson.6 }}</td>
-              <td>{{ lesson.6 }}</td>
-              <td>asd</td>
+              <td>{{ lesson.5|date:"d-m-Y" }}</td>
+              <td>{{ lesson.6|time:"H:i" }}</td>
+              <td>{{ lesson.7|time:"H:i" }}</td>
+              <td><button onclick="location.href='{% url 'edit-coord-lessons' lesson_id=lesson.0 %}'">Редагувати</button></td>
             </tr>
           {% endfor %}
         </tbody>
@@ -72,9 +72,9 @@
               <td>
                 {{ lesson.3 }} {{ lesson.4 }}
               </td>
-              <td>{{ lesson.5 }}</td>
-              <td>{{ lesson.6 }}</td>
-              <td>{{ lesson.6 }}</td>
+              <td>{{ lesson.5|date:"d-m-Y" }}</td>
+              <td>{{ lesson.6|time:"H:i" }}</td>
+              <td>{{ lesson.7|time:"H:i" }}</td>
             </tr>
           {% endfor %}
         </tbody>

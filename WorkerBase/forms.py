@@ -10,25 +10,11 @@ class StudentGradeForm(forms.Form):
    eval_elt = forms.ChoiceField(label='Оцінюваний елемент', required=True)
    lesson = forms.ChoiceField(label='Проведене Заняття', required=True)
 
-   def __init__(self, *args, **kwargs):
-       self.is_editing = kwargs.pop('is_editing', False)
-       super(StudentGradeForm, self).__init__(*args, **kwargs)
-       if self.is_editing:
-           self.fields['student'].widget = forms.HiddenInput()
-           self.fields['lesson'].widget = forms.HiddenInput()
-
 class StudentAttendanceForm(forms.Form):
    student = forms.ChoiceField(label='Учень', required=True)
    lesson = forms.ChoiceField(label='Проведене Заняття', required=True)
    attendance = forms.TypedChoiceField(choices=[('відвідано', 'відвідано'),
                                                 ('пропущено', 'пропущено')], coerce=str, required=True, label='Статус')
-   
-   def __init__(self, *args, **kwargs):
-       self.is_editing = kwargs.pop('is_editing', False)
-       super(StudentAttendanceForm, self).__init__(*args, **kwargs)
-       if self.is_editing:
-           self.fields['student'].widget = forms.HiddenInput()
-           self.fields['lesson'].widget = forms.HiddenInput()
 
 class DatesForm(forms.Form):
     from_date = forms.DateField(label='Від', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
@@ -59,8 +45,8 @@ class StudentCompForm(forms.Form):
     time = forms.TimeField(input_formats=['%H:%M'], label='Час')
 
 class CreateTeacherForm(forms.Form):
-      first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
       last_name = forms.CharField(max_length=50, required=True, label="Прізвище")
+      first_name = forms.CharField(max_length=50, required=True, label="Ім'я")
       patronymic = forms.CharField(max_length=50, label="По-батькові")
       personal_class = forms.ChoiceField(label='Клас учнів', required=True)
 
@@ -81,7 +67,7 @@ class CreateStudentForm(forms.Form):
 class AddStudentToClassForm(forms.Form):
     student = forms.ChoiceField(label='Учень без класу', required=True)
 
-class AddPlannedLessonForm(forms.Form):
+class PlannedLessonForm(forms.Form):
     discipline = forms.ChoiceField(label='Дисципліна', required=True)
     student_class = forms.ChoiceField(label='Клас', required=True)
     teacher = forms.ChoiceField(label='Вчитель', required=True)

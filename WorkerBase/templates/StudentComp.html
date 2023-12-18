@@ -31,15 +31,15 @@
         <td>{{ comp.2 }}</td>
         <td>{{ comp.3 }}</td>
         <td>{{ comp.4 }}</td>
-        <td>{{ comp.5 }}</td>
-        <td><button onclick="location.href='{% url 'handle-comp' class_id=id_class %}?action_type={{ 'alter' }}'">
+        <td>{{ comp.5|date:"Y-m-d H:i" }}</td>
+        <td><button onclick="location.href='{% url 'edit-comp' class_id=id_class comp_id=comp.6 %}'">
           Редагувати
         </button></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-  <a href="{% url 'handle-comp' class_id=id_class %}?action_type={{ 'insert' }}" class='add_record'>Зареєструвати компетенцію учня</a>
+  <a href="{% url 'add-comp' class_id=id_class %}" class='add_record'>Зареєструвати компетенцію учня</a>
   <a href="{% url 'show-teacher-page' %}" class='go_back'>Повернутись до своєї сторінки</a>
  </div>
 {% endblock %}

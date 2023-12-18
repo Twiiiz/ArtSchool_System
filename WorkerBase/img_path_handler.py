@@ -8,20 +8,18 @@ class Rename(object):
     filename = ''
     if role == 'student':
         cursor.execute("""
-                       SELECT MAX(student_id)
-                       FROM Students
+                       SELECT IDENT_CURRENT('Students')
                        """)
-        student_id = cursor.fetchall()
-        student_id = student_id[0][0] + 1
+        student_id = cursor.fetchone()
+        student_id = student_id[0] + 1
         filename = 'id_{}.{}'.format(student_id, ext)
         folder = 'StudentIMG/'
     elif role == 'teacher':
         cursor.execute("""
-                       SELECT MAX(worker_id)
-                       FROM Workers
+                       SELECT IDENT_CURRENT('Workers')
                        """)
-        teacher_id = cursor.fetchall()
-        teacher_id = teacher_id[0][0] + 1
+        teacher_id = cursor.fetchone()
+        teacher_id = teacher_id[0] + 1
         filename = 'id_{}.{}'.format(teacher_id, ext)
         folder = 'WorkerIMG/'
     return os.path.join(folder, filename)
