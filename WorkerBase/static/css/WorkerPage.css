@@ -65,6 +65,7 @@ body {
   height: 65%;
   width: 8vh;
   border-radius: 40%;
+  object-fit: cover;
 }
 
 .exit {

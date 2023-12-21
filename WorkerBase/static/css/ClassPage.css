@@ -21,7 +21,7 @@ th, td {
   padding: 0.5%;
 }
 
-a {
+.class_content a {
   display: block;
   height: 10%;
   width: 32%;

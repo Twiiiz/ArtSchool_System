@@ -22,7 +22,7 @@ def handleLogin(request):
       cursor = connection.cursor()
       cursor.execute("""
                     SELECT last_name, first_name, patronymic, photo_path, worker_id, [Worker roles].[name]
-                    FROM [Employee login data] INNER JOIN Workers ON [Employee login data].fk_worker_id = Workers.worker_id
+                    FROM [Worker entry data] INNER JOIN Workers ON [Worker entry data].fk_worker_id = Workers.worker_id
                      INNER JOIN [Worker roles] ON Workers.fk_role_id = [Worker roles].role_id
                     WHERE login = %s AND password = %s 
                     """, [login, password])
@@ -282,7 +282,7 @@ def addStudentGrade(request, class_id):
                                            'w_photo': request.session['photo'],
                                            'form': form})
 
-def editStudentGrade(request, class_id, grade_id, student_id, lesson_id):
+def editStudentGrade(request, class_id, grade_id):
   cursor = connection.cursor()
   if request.method=='POST':
     form = StudentGradeForm(request.POST)
@@ -417,7 +417,7 @@ def addStudentAttendance(request, class_id):
                                               'w_photo': request.session['photo'],
                                            'form': form})
 
-def editStudentAttendance(request, class_id, attend_id, student_id, lesson_id):
+def editStudentAttendance(request, class_id, attend_id):
   cursor = connection.cursor()
   if request.method=='POST':
     form = StudentAttendanceForm(request.POST)
@@ -647,7 +647,7 @@ def addStudentComp(request, class_id):
                                                        WHERE fk_teacher_id = %s)
                    """, (request.session['worker_id'],))
     skills = cursor.fetchall()
-    form.fields['skill'].choices = [(skill[0], f'Компетенція: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
+    form.fields['skill'].choices = [(skill[0], f'Назва: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
@@ -686,7 +686,7 @@ def addStudentComp(request, class_id):
                                                        WHERE fk_teacher_id = %s)
                    """, (request.session['worker_id'],))
     skills = cursor.fetchall()
-    form.fields['skill'].choices = [(skill[0], f'Компетенція: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
+    form.fields['skill'].choices = [(skill[0], f'Назва: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
@@ -721,7 +721,7 @@ def editStudentComp(request, class_id, comp_id):
                                                        WHERE fk_teacher_id = %s)
                    """, (request.session['worker_id'],))
     skills = cursor.fetchall()
-    form.fields['skill'].choices = [(skill[0], f'Компетенція: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
+    form.fields['skill'].choices = [(skill[0], f'Назва: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
@@ -761,7 +761,7 @@ def editStudentComp(request, class_id, comp_id):
                                                        WHERE fk_teacher_id = %s)
                    """, (request.session['worker_id'],))
     skills = cursor.fetchall()
-    form.fields['skill'].choices = [(skill[0], f'Компетенція: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
+    form.fields['skill'].choices = [(skill[0], f'Назва: {skill[1]}, Дисципліна: {skill[2]}') for skill in skills]
     cursor.execute("""
                    SELECT student_id, last_name, first_name, patronymic
                    FROM Students INNER JOIN [Students in class] ON student_id = fk_student_id
@@ -876,7 +876,7 @@ def addTeacher(request):
           teacher_id = cursor.fetchone()
           teacher_id = teacher_id[0]
           cursor.execute("""
-                         INSERT INTO [Employee login data](fk_worker_id, login, password) VALUES
+                         INSERT INTO [Worker entry data](fk_worker_id, login, password) VALUES
                          (%s, %s, %s)
                          """, (teacher_id, login, password))
           if cursor.rowcount > 0:
@@ -895,7 +895,7 @@ def addTeacher(request):
                   response = redirect('show-coord-page')
                   return response
               else:
-                response = redirect('show-coord-page')
+                response = redirect('show-teachers-list')
                 return response
   else:
     form = CreateTeacherForm()
@@ -1132,7 +1132,7 @@ def addPlannedLesson(request):
                                             'w_photo': request.session['photo'],
                                             'form': form})
 
-def editCoordLesson(request, lesson_id):
+def editPlannedLesson(request, lesson_id):
   cursor = connection.cursor()
   if request.method=='POST':
     form = PlannedLessonForm(request.POST)

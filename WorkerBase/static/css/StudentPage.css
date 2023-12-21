@@ -7,7 +7,7 @@
   color: white;
 }
 
-img {
+.student_content img {
   height: 20%;
   width: 45%;
   object-fit: contain;
@@ -29,7 +29,7 @@ th, td {
 }
 
 .student, .main_teacher {
-  height: 10%;
+  height: 8%;
   width: 30%;
   margin-left: auto;
   margin-right: auto;
@@ -46,14 +46,6 @@ th, td {
 
 h1 {
   font-size: 36px;
-}
-
-/* h2 {
-  font-size: 28px;
-} */
-
-#profile {
-  margin-right: 3%;
 }
 
 .main_teacher {
