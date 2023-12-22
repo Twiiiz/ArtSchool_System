@@ -614,7 +614,17 @@ def editTeacherLessonDone(request, lesson_id):
         response = redirect('show-teacher-lesson-page')
         return response
   else:
-    form = TeacherLessonDone()
+    cursor.execute("""
+                   SELECT [date], start_time, end_time
+                   FROM Lessons
+                   WHERE lesson_id = %s
+                   """, (lesson_id,))
+    time_data = cursor.fetchone()
+    form = TeacherLessonDone(initial={
+      'date': time_data[0],
+      'start_time': time_data[1].strftime('%H:%M'),
+      'end_time': time_data[2].strftime('%H:%M')
+    })
     cursor.execute("""
                    SELECT discipline_id, [name]
                    FROM Disciplines
