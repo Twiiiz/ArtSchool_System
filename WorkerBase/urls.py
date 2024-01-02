@@ -38,6 +38,7 @@ urlpatterns = [
       path('', showTeachersListPage, name='show-teachers-list'),
       path('<int:teacher_id>/', showCoordTeacherPage, name='show-coord-teacher-page'),
       path('/add_teacher/', addTeacher, name='add-teacher'),
+      path('/add_teacher_to_class', addTeacherToClass, name='add-teacher-to-class')
     ]), name='work-with-teachers'),
 
     path('coord_page/add_student/', addStudent, name='add-student'),
@@ -45,7 +46,8 @@ urlpatterns = [
       path('', showClassesPage, name='show-coord-classes-page'),
       path('class/<int:class_id>/', showClassPage, name='show-coord-class-page'),
       path('<int:class_id>/<int:student_id>', showStudentPage, name='show-coord-student-page'),
-      path('<int:class_id>/add_student', addStudentToClass, name='add-student-to-class')
+      path('<int:class_id>/add_student', addStudentToClass, name='add-student-to-class'),
+      path('add_class/', addClass, name='add-class')
     ]), name='work-with-classes-and-students'),
     path('coord_page/fill_dates/', include([
       path('', showDatesFormCoord, name='show-dates-form-coord'),

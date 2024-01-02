@@ -74,3 +74,12 @@ class PlannedLessonForm(forms.Form):
     date = forms.DateField(label='Дата', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
     start_time = forms.TimeField(input_formats=['%H:%M'], label='Час початку заняття')
     end_time = forms.TimeField(input_formats=['%H:%M'], label='Час кінця заняття')
+
+class CreateClassForm(forms.Form):
+    name = forms.CharField(required=True, max_length=25, label='Назва класу')
+    spec = forms.ChoiceField(required=True, label='Спеціалізація')
+    main_teacher = forms.ChoiceField(label='Класний керівник')
+
+class AddClassToTeacherForm(forms.Form):
+    teacher = forms.ChoiceField(required=True, label='Вчитель')
+    student_class = forms.ChoiceField(required=True, label='Клас')

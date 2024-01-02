@@ -1,5 +1,5 @@
 .class_content {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   background-color: rgb(90, 153, 173);
   flex-grow: 1;
@@ -40,10 +40,14 @@ th, td {
 }
 
 .stats {
-  margin-bottom: 2%;
+  margin-bottom: 1%;
 }
 
 h1 {
   font-size: 36px;
   margin-bottom: 5%;
+}
+
+.comp {
+  margin-bottom: 2%;
 }

@@ -18,6 +18,7 @@ table {
   background-color: white;
   border-collapse: collapse;
   font-size: 18px;
+  margin-bottom: 24.5%;
 }
 
 th, td {
@@ -26,4 +27,16 @@ th, td {
 
 #profile {
   margin-right: 3%;
+}
+
+.content a {
+  text-decoration: none;
+  color: inherit;
+  font-size: 25px;
+  border: 3.5px solid white;
+  padding: 1%;
+}
+
+.add_class {
+  margin-right: 1%;
 }

@@ -36,8 +36,10 @@
         </thead>
         <tbody>
           {% for teacher_class in teacher_classes_data %}
-            <td>{{ teacher_class.0 }}</td>
-            <td>{{ teacher_class.1 }}</td>
+            <tr>
+              <td>{{ teacher_class.0 }}</td>
+              <td>{{ teacher_class.1 }}</td>
+            </tr>
           {% endfor %}
         </tbody>
       </table>

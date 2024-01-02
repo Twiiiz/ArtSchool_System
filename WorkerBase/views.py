@@ -762,7 +762,19 @@ def editStudentComp(request, class_id, comp_id):
         response = redirect('show-teacher-student-comp-page', class_id=class_id)
         return response
   else:
-    form = StudentCompForm()
+    cursor.execute("""
+                   SELECT date_time
+                   FROM [Student competencies]
+                   WHERE stud_comp_id = %s
+                   """, (comp_id,))
+    dtime = cursor.fetchone()
+    get_data = dtime[0].date()
+    get_time = dtime[0].time()
+    print(get_time)
+    form = StudentCompForm(initial={
+      'date': get_data.strftime('%Y-%m-%d'),
+      'time': get_time.strftime('%H:%M'),
+    })
     cursor.execute("""
                    SELECT skill_id, [Discipline skills].[name], Disciplines.[name]
                    FROM [Discipline skills] INNER JOIN Disciplines ON fk_discipline_id = discipline_id
@@ -969,9 +981,9 @@ def addStudentToClass(request, class_id):
                  FROM Students s
                  WHERE NOT EXISTS (SELECT 1
                                    FROM [Students in class] sc
-                                   WHERE sc.fk_student_id = s.student_id AND sc.fk_class_id = %s
+                                   WHERE sc.fk_student_id = s.student_id
                 )
-                 """, (class_id,))
+                """)
   new_students = cursor.fetchall()
   if request.method=='POST':
     form = AddStudentToClassForm(request.POST)
@@ -1214,6 +1226,122 @@ def editPlannedLesson(request, lesson_id):
                   """)
     teachers = cursor.fetchall()
     form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})
+
+def addClass(request):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = CreateClassForm(request.POST)
+    cursor.execute("""
+                   SELECT worker_id, last_name, first_name, patronymic
+                   FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                   WHERE [Worker roles].[name] = N'Вчитель'
+                   """)
+    teachers = cursor.fetchall()
+    form.fields['main_teacher'].choices = [(0, 'Без вчителя')] + [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
+    cursor.execute("""
+                   SELECT spec_id, [name]
+                   FROM Specialisations
+                   """)
+    specs = cursor.fetchall()
+    form.fields['spec'].choices = [(spec[0], f'{spec[1]}') for spec in specs]
+    if form.is_valid():
+      name = form.cleaned_data.get('name')
+      main_teacher = int(form.cleaned_data.get('main_teacher'))
+      specialisation = int(form.cleaned_data.get('spec'))
+      if main_teacher == 0:
+        cursor.execute("""
+                       INSERT INTO Classes([name], fk_spec_id) VALUES
+                       (%s, %s)
+                       """, (name, specialisation))
+        if cursor.rowcount > 0:
+          response = redirect('show-coord-classes-page')
+          return response
+      else:
+        cursor.execute("""
+                       INSERT INTO Classes([name], fk_teacher_id, fk_spec_id) VALUES
+                       (%s, %s, %s)
+                       """, (name, main_teacher, specialisation))
+        if cursor.rowcount > 0:
+          response = redirect('show-coord-classes-page')
+          return response
+  else:
+    form = CreateClassForm()
+    cursor.execute("""
+                   SELECT worker_id, last_name, first_name, patronymic
+                   FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                   WHERE [Worker roles].[name] = N'Вчитель'
+                   """)
+    teachers = cursor.fetchall()
+    form.fields['main_teacher'].choices = [(0, 'Без вчителя')] + [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
+    cursor.execute("""
+                   SELECT spec_id, [name]
+                   FROM Specialisations
+                   """)
+    specs = cursor.fetchall()
+    form.fields['spec'].choices = [(spec[0], f'{spec[1]}') for spec in specs]
+    system_messages = messages.get_messages(request)
+    for message in system_messages:
+      pass
+  return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
+                                            'w_first_name': request.session['first_name'], 
+                                            'w_role': request.session['role'],
+                                            'w_photo': request.session['photo'],
+                                            'form': form})
+
+def addTeacherToClass(request):
+  cursor = connection.cursor()
+  if request.method=='POST':
+    form = AddClassToTeacherForm(request.POST)
+    cursor.execute("""
+                   SELECT worker_id, last_name, first_name, patronymic
+                   FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                   WHERE [Worker roles].[name] = N'Вчитель'
+                   """)
+    teachers = cursor.fetchall()
+    form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
+    cursor.execute("""
+                   SELECT class_id, [name]
+                   FROM Classes
+                   WHERE fk_teacher_id IS NULL
+                   """)
+    student_classes = cursor.fetchall()
+    form.fields['student_class'].choices = [(student_class[0], f'{student_class[1]}') for student_class in student_classes] 
+    if form.is_valid():
+      teacher = int(form.cleaned_data.get('teacher'))
+      student_class = int(form.cleaned_data.get('student_class'))
+      if student_class != 0:
+        cursor.execute("""
+                     UPDATE Classes
+                     SET fk_teacher_id = %s
+                     WHERE class_id = %s
+                     """, (teacher, student_class))
+        if cursor.rowcount > 0:
+          response = redirect('show-teachers-list')
+          return response
+  else:
+    form = AddClassToTeacherForm()
+    cursor.execute("""
+                   SELECT worker_id, last_name, first_name, patronymic
+                   FROM Workers INNER JOIN [Worker roles] ON fk_role_id = role_id
+                   WHERE [Worker roles].[name] = N'Вчитель'
+                   """)
+    teachers = cursor.fetchall()
+    form.fields['teacher'].choices = [(teacher[0], f'{teacher[1]} {teacher[2]} {teacher[3]}') for teacher in teachers]
+    cursor.execute("""
+                   SELECT class_id, [name]
+                   FROM Classes
+                   WHERE fk_teacher_id IS NULL
+                   """)
+    student_classes = cursor.fetchall()
+    form.fields['student_class'].choices = [(student_class[0], f'{student_class[1]}') for student_class in student_classes] 
     system_messages = messages.get_messages(request)
     for message in system_messages:
       pass
