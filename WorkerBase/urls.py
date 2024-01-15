@@ -37,8 +37,8 @@ urlpatterns = [
     path('coord_page/view-teachers/', include([
       path('', showTeachersListPage, name='show-teachers-list'),
       path('<int:teacher_id>/', showCoordTeacherPage, name='show-coord-teacher-page'),
-      path('/add_teacher/', addTeacher, name='add-teacher'),
-      path('/add_teacher_to_class', addTeacherToClass, name='add-teacher-to-class')
+      path('add_teacher/', addTeacher, name='add-teacher'),
+      path('add_teacher_to_class', addTeacherToClass, name='add-teacher-to-class')
     ]), name='work-with-teachers'),
 
     path('coord_page/add_student/', addStudent, name='add-student'),

@@ -9,7 +9,7 @@
   {{ block.super }}
   <div class='student_content'>
     <h1>Особова сторінка</h1>
-    <img src="{% static student_data.5 %}">
+    <img src="{% static student_data.photo_path %}">
     <div class='student'>
       <table class='student_table'>
         <thead>
@@ -21,10 +21,10 @@
           </tr>
         </thead>
         <tbody>
-          <td>{{ student_data.1 }}</td>
-          <td>{{ student_data.2 }}</td>
-          <td>{{ student_data.3 }}</td>
-          <td>{{ student_data.4|date:"d-m-Y" }}</td>
+          <td>{{ student_data.last_name }}</td>
+          <td>{{ student_data.first_name }}</td>
+          <td>{{ student_data.patronymic }}</td>
+          <td>{{ student_data.date_of_birth|date:"d-m-Y" }}</td>
         </tbody>
       </table>
     </div>
@@ -37,9 +37,9 @@
           <th>По-батькові</th>
         </thead>
         <tbody>
-          <td>{{ main_teacher.0 }}</td>
-          <td>{{ main_teacher.1 }}</td>
-          <td>{{ main_teacher.2 }}</td>
+          <td>{{ main_teacher.last_name }}</td>
+          <td>{{ main_teacher.first_name }}</td>
+          <td>{{ main_teacher.patronymic }}</td>
         </tbody>
       </table>
     </div>

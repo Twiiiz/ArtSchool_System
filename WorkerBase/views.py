@@ -8,6 +8,7 @@ from django.core.files.storage import default_storage
 from WorkerBase.img_path_handler import Rename
 from .forms import *
 from datetime import date, datetime
+from .models import *
 
 
 def handleLogin(request):
@@ -95,18 +96,13 @@ def showClassPage(request, class_id):
 
 def showStudentPage(request, class_id, student_id):
   cursor = connection.cursor()
-  cursor.execute("""
-                 SELECT *
-                 FROM Students
-                 WHERE student_id = %s
-                 """, (student_id,))
-  student_data = cursor.fetchone()
+  student_data = Students.objects.get(student_id = student_id)
   cursor.execute("""
                  SELECT last_name, first_name, patronymic
                  FROM Workers INNER JOIN Classes ON worker_id = fk_teacher_id
                  WHERE class_id = %s
                  """, (class_id,))
-  main_teacher = cursor.fetchone()
+  main_teacher = Workers.objects.select_related('classes').filter(classes__class_id=class_id).values('last_name', 'first_name', 'patronymic').get()
   return render(request, 'StudentPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
