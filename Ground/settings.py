@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'Ground.wsgi.application'
 DATABASES = {
   'default': {
       'ENGINE': 'sql_server.pyodbc',
-      'NAME': 'ArtSchool',
+      'NAME': 'art_school',
       'HOST': '(localdb)\MSSQLLocalDB',
       'PORT': '',
       'OPTIONS': {

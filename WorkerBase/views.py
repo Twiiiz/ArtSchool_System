@@ -9,7 +9,7 @@ from WorkerBase.img_path_handler import Rename
 from .forms import *
 from datetime import date, datetime
 from .models import *
-
+from django.contrib.auth.models import User
 
 def handleLogin(request):
   if request.session.keys():
@@ -18,36 +18,38 @@ def handleLogin(request):
   if request.method=='POST':
     form = LoginForm(request.POST)
     if form.is_valid():
-      login = form.cleaned_data.get('login')
+      username = form.cleaned_data.get('username')
       password = form.cleaned_data.get('password')
-      cursor = connection.cursor()
-      cursor.execute("""
-                    SELECT last_name, first_name, patronymic, photo_path, worker_id, [Worker roles].[name]
-                    FROM [Worker entry data] INNER JOIN Workers ON [Worker entry data].fk_worker_id = Workers.worker_id
-                     INNER JOIN [Worker roles] ON Workers.fk_role_id = [Worker roles].role_id
-                    WHERE login = %s AND password = %s 
-                    """, [login, password])
-      worker = cursor.fetchone()
-      if worker is not None:
-        request.session['role'] = worker[-1]
-        request.session['last_name'] = worker[0]
-        request.session['first_name'] = worker[1]
-        request.session['patronymic'] = worker[2]
-        request.session['photo'] = worker[3]
-        request.session['worker_id'] = worker[4]
-        if request.session['role'] == 'Координатор':
-          response = redirect('coord_page/')
-        elif request.session['role'] == 'Вчитель':
-          response = redirect('teacher_page/')
-        response.set_cookie('logged_in', 'True', secure=True)
-        return response
-      else:
+
+      user = User.objects.get(username=username)
+      if not user.check_password(password):
         messages.error(request, "Неправильно введено ім'я користувача чи пароль")
+
+      worker_login_data = WorkerLoginData.objects.get(auth_user_id=user.id)
+      worker = worker_login_data.worker
+      request.session['worker_id'] = worker.worker_id
+      request.session['last_name'] = worker.last_name
+      request.session['first_name'] = worker.first_name
+      request.session['patronymic'] = worker.patronymic
+      request.session['role'] = WorkerRole.objects.get(worker_role_id=worker.worker_role_id).name
+      request.session['photo_path'] = worker.photo_path
+      
+      if request.session['role'] == 'Координатор':
+        response = redirect('coord_page/')
+      elif request.session['role'] == 'Вчитель':
+        response = redirect('teacher_page/')
+      else:
+        raise Http404
+      
+      response.set_cookie('logged_in', 'True', secure=True)
+      return response
   else:
     form = LoginForm()
     system_messages = messages.get_messages(request)
+    
     for message in system_messages:
       pass
+
   return render(request, 'UserEntry.html', {'form': form})
 
 def showTeacherPage(request):
@@ -64,7 +66,7 @@ def showTeacherPage(request):
   return render(request, 'TeacherPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                               'is_None': is_None,
                                               'classes': classes})
 
@@ -82,31 +84,31 @@ def showClassPage(request, class_id):
     response = render(request, 'ClassPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'class_students': class_students,
                                             'class_id': class_id})
   elif request.session['role'] == 'Координатор':
     response = render(request, 'CoordClassPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'class_students': class_students,
                                             'class_id': class_id})
   return response
 
 def showStudentPage(request, class_id, student_id):
   cursor = connection.cursor()
-  student_data = Students.objects.get(student_id = student_id)
+  student_data = Student.objects.get(student_id = student_id)
   cursor.execute("""
                  SELECT last_name, first_name, patronymic
                  FROM Workers INNER JOIN Classes ON worker_id = fk_teacher_id
                  WHERE class_id = %s
                  """, (class_id,))
-  main_teacher = Workers.objects.select_related('classes').filter(classes__class_id=class_id).values('last_name', 'first_name', 'patronymic').get()
+  main_teacher = Worker.objects.select_related('classes').filter(classes__class_id=class_id).values('last_name', 'first_name', 'patronymic').get()
   return render(request, 'StudentPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                               'student_data': student_data,
                                               'main_teacher': main_teacher})
 
@@ -129,7 +131,7 @@ def showTeacherLessonsPage(request):
   return render(request, 'TeacherLessons.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                               'lessons_done': lessons_done,
                                               'lessons_planned': lessons_planned,})
 
@@ -170,7 +172,7 @@ def showStudentStatsPage(request, class_id):
   return render(request, 'StudentStats.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                               'student_grades': student_grades,
                                               'student_attend': student_attend,
                                               'id_class': class_id,
@@ -201,7 +203,7 @@ def showStudentCompPage(request, class_id):
   return render(request, 'StudentComp.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                               'student_comp': student_comp,
                                               'class_name': class_name[0],
                                               'id_class': class_id})
@@ -275,7 +277,7 @@ def addStudentGrade(request, class_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                            'w_first_name': request.session['first_name'], 
                                            'w_role': request.session['role'],
-                                           'w_photo': request.session['photo'],
+                                           'w_photo': request.session['photo_path'],
                                            'form': form})
 
 def editStudentGrade(request, class_id, grade_id):
@@ -349,7 +351,7 @@ def editStudentGrade(request, class_id, grade_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                            'form': form})
 
 
@@ -410,7 +412,7 @@ def addStudentAttendance(request, class_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                            'form': form})
 
 def editStudentAttendance(request, class_id, attend_id):
@@ -471,7 +473,7 @@ def editStudentAttendance(request, class_id, attend_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                               'w_first_name': request.session['first_name'], 
                                               'w_role': request.session['role'],
-                                              'w_photo': request.session['photo'],
+                                              'w_photo': request.session['photo_path'],
                                            'form': form})
 
 def showDatesFormStudent(request, class_id):
@@ -500,7 +502,7 @@ def showDatesFormStudent(request, class_id):
   return render(request, 'DatesForm.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def showDatesFormLessons(request):
@@ -525,7 +527,7 @@ def showDatesFormLessons(request):
   return render(request, 'DatesForm.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def addTeacherLessonDone(request):
@@ -577,7 +579,7 @@ def addTeacherLessonDone(request):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def editTeacherLessonDone(request, lesson_id):
@@ -638,7 +640,7 @@ def editTeacherLessonDone(request, lesson_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def addStudentComp(request, class_id):
@@ -712,7 +714,7 @@ def addStudentComp(request, class_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def editStudentComp(request, class_id, comp_id):
@@ -799,7 +801,7 @@ def editStudentComp(request, class_id, comp_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def showCoordPage(request):
@@ -808,7 +810,7 @@ def showCoordPage(request):
   return render(request, 'CoordPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo']})                                            
+                                            'w_photo': request.session['photo_path']})                                            
 
 def showTeachersListPage(request):
   cursor = connection.cursor()
@@ -830,7 +832,7 @@ def showTeachersListPage(request):
   return render(request, 'TeachersList.html', {'w_last_name': request.session['last_name'],
                                                'w_first_name': request.session['first_name'], 
                                                'w_role': request.session['role'],
-                                               'w_photo': request.session['photo'],
+                                               'w_photo': request.session['photo_path'],
                                                'teachers': teachers,
                                                'disciplines_dict': teacher_disciplines_dict})
 
@@ -844,7 +846,7 @@ def showClassesPage(request):
   return render(request, 'ClassesList.html', {'w_last_name': request.session['last_name'],
                                                'w_first_name': request.session['first_name'], 
                                                'w_role': request.session['role'],
-                                               'w_photo': request.session['photo'],
+                                               'w_photo': request.session['photo_path'],
                                                'classes': classes})
 
 def addTeacher(request):
@@ -877,7 +879,7 @@ def addTeacher(request):
 
       discipline = form.cleaned_data.get('discipline')
       if fk_class_id > 0:
-        photo = request.FILES['photo']
+        photo = request.FILES['photo_path']
         filepath = Rename.rename('teacher', photo.name)
         photo_path = filepath
         cursor.execute("""
@@ -936,7 +938,7 @@ def addTeacher(request):
   return render(request, 'PersonFormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def addStudent(request):
@@ -948,7 +950,7 @@ def addStudent(request):
       first_name = form.cleaned_data.get('first_name')
       patronymic = form.cleaned_data.get('patronymic')
       date_of_birth = form.cleaned_data.get('date_of_birth').strftime('%Y-%m-%d')
-      photo = request.FILES['photo']
+      photo = request.FILES['photo_path']
       filepath = Rename.rename('student', photo.name)
       photo_path = filepath
       cursor.execute("""
@@ -967,7 +969,7 @@ def addStudent(request):
   return render(request, 'PersonFormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def addStudentToClass(request, class_id):
@@ -1003,7 +1005,7 @@ def addStudentToClass(request, class_id):
   return render(request, 'PersonFormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def showCoordTeacherPage(request, teacher_id):
@@ -1024,7 +1026,7 @@ def showCoordTeacherPage(request, teacher_id):
   return render(request, 'CoordTeacherPage.html', {'w_last_name': request.session['last_name'],
                                                   'w_first_name': request.session['first_name'], 
                                                   'w_role': request.session['role'],
-                                                  'w_photo': request.session['photo'],
+                                                  'w_photo': request.session['photo_path'],
                                                   'teacher_data': teacher,
                                                   'teacher_classes_data': teacher_classes})
 
@@ -1049,7 +1051,7 @@ def showDatesFormCoord(request):
   return render(request, 'DatesForm.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def showCoordLessons(request):
@@ -1075,7 +1077,7 @@ def showCoordLessons(request):
   return render(request, 'CoordLessons.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'planned_lessons': planned_lessons,
                                             'done_lessons': done_lessons})
 
@@ -1147,7 +1149,7 @@ def addPlannedLesson(request):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def editPlannedLesson(request, lesson_id):
@@ -1228,7 +1230,7 @@ def editPlannedLesson(request, lesson_id):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def addClass(request):
@@ -1289,7 +1291,7 @@ def addClass(request):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
 
 def addTeacherToClass(request):
@@ -1344,5 +1346,5 @@ def addTeacherToClass(request):
   return render(request, 'FormPage.html', {'w_last_name': request.session['last_name'],
                                             'w_first_name': request.session['first_name'], 
                                             'w_role': request.session['role'],
-                                            'w_photo': request.session['photo'],
+                                            'w_photo': request.session['photo_path'],
                                             'form': form})
